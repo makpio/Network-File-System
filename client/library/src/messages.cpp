@@ -6,6 +6,12 @@
 #include <vector>
 #include <string>
 
+char OPEN_CODE = 1;
+char READ_CODE = 2;
+char WRITE_CODE = 3;
+char LSEEK_CODE = 4;
+char CLOSE_CODE = 5;
+
 struct OpenRequest {
   char *path;
   int oflag;
