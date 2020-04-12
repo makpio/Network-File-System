@@ -12,8 +12,9 @@ char WRITE_CODE = 3;
 char LSEEK_CODE = 4;
 char CLOSE_CODE = 5;
 
+
 struct OpenRequest {
-  char *path;
+  std::string path;
   int oflag;
   int mode;
 };
@@ -36,8 +37,7 @@ struct ReadResponse {
 
 struct WriteRequest {
   int fd;
-  const char* buf;
-  ssize_t count;
+  std::vector<char> buf;
 };
 
 struct WriteResponse {
