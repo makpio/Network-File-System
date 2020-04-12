@@ -6,11 +6,16 @@
 #include <vector>
 #include <string>
 
-u_int8_t OPEN_CODE = 1;
-u_int8_t READ_CODE = 2;
-u_int8_t WRITE_CODE = 3;
-u_int8_t LSEEK_CODE = 4;
-u_int8_t CLOSE_CODE = 5;
+u_int8_t OPEN_REQUEST_CODE = 1;
+u_int8_t OPEN_RESPONSE_CODE = 2;
+u_int8_t READ_REQUEST_CODE = 3;
+u_int8_t READ_RESPONSE_CODE = 4;
+u_int8_t WRITE_REQUEST_CODE = 5;
+u_int8_t WRITE_RESPONSE_CODE = 6;
+u_int8_t LSEEK_REQUEST_CODE = 7;
+u_int8_t LSEEK_RESPONSE_CODE = 8;
+u_int8_t CLOSE_REQUEST_CODE = 9;
+u_int8_t CLOSE_RESPONSE_CODE = 10;
 
 
 struct OpenRequest {
