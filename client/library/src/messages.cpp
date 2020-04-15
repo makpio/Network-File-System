@@ -17,6 +17,13 @@ u_int8_t LSEEK_RESPONSE_CODE = 8;
 u_int8_t CLOSE_REQUEST_CODE = 9;
 u_int8_t CLOSE_RESPONSE_CODE = 10;
 
+/*
+ *fd = file descriptor
+ *
+ *
+ * 
+ */ 
+
 
 struct OpenRequest {
   std::string path;
