@@ -28,13 +28,13 @@ std::string MessageParser::readString() {};
 
 
 extern std::vector<char> SerializeOpenRequest(OpenRequest open_request) {
-  u_int8_t message_type = OPEN_REQUEST_CODE;
+  u_int8_t message_type = static_cast<u_int8_t> (MessageType::OPEN_REQUEST);
   std::string path = open_request.path;
   int32_t oflag = open_request.oflag;
   int32_t mode = open_request.mode;
 
   MessageBuilder request_builder;
-  request_builder.writeMessageType(OPEN_REQUEST_CODE);
+  request_builder.writeMessageType(message_type);
   request_builder.write(path);
   request_builder.write(oflag);
   request_builder.write(mode);
@@ -55,11 +55,12 @@ extern OpenRequest DeserializeToOpenRequest(std::vector<char> byte_request) {
 }
 
 extern std::vector<char> SerializeOpenResponse(OpenResponse open_response) {
+  u_int8_t message_type = static_cast<u_int8_t> (MessageType::OPEN_RESPONSE);
   int32_t result = open_response.result;
   int32_t error = open_response.error;
 
   MessageBuilder request_builder;
-  request_builder.writeMessageType(OPEN_RESPONSE_CODE);
+  request_builder.writeMessageType(message_type);
   request_builder.write(result);
   request_builder.write(error);
 
