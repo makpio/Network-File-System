@@ -1,0 +1,1 @@
+g++ test1.cpp -o test1 -L../build/ -ltest1

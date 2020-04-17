@@ -1,7 +1,6 @@
 #include "lib.hpp"
-#include "src/serializers.cpp"
-#include "src/messages.cpp"
-
+#include "lib/serializers.hpp"
+#include "lib/messages.hpp"
 extern int error;
 
 NFSClient::NFSClient(char *host, int port, char *user, char *password) {};

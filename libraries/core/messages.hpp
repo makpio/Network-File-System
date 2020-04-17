@@ -1,5 +1,5 @@
-#ifndef MESSAGES_CPP
-#define MESSAGES_CPP
+#ifndef MESSAGES_HPP
+#define MESSAGES_HPP
 
 #include <cstdint>
 #include <sys/types.h>
