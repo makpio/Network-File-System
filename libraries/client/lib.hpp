@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <vector>
 
-extern int error;
+extern int error_;
 
 class NFSClient {
 public:
@@ -25,7 +25,7 @@ public:
 
 private:
   void sendRequest_(std::vector<char> request);
-  std::vector<char> receiveResponse_(){return std::vector<char>{};};
+  std::vector<char> receiveResponse_();
 };
 
 #endif

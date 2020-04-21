@@ -1,7 +1,7 @@
 #include "lib.hpp"
-#include "../core/serializers.hpp"
-#include "../core/messages.hpp"
-extern int error;
+#include "include/serializers.hpp"
+#include "include/messages.hpp"
+extern int error_;
 
 NFSClient::NFSClient(char *host, int port, char *user, char *password) {};
 int NFSClient::connect() {};
@@ -14,7 +14,7 @@ int NFSClient::open(char *path, int oflag, int mode) {
     std::vector<char> byte_response = receiveResponse_();
 
     OpenResponse open_response = DeserializeToOpenResponse(byte_response);
-    error = open_response.error;
+    error_ = open_response.error;
     return open_response.result;
 }
 ssize_t NFSClient::read(int fd, void *buf, size_t count) {}
