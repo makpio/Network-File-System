@@ -25,7 +25,7 @@ public:
 
 private:
   void sendRequest_(std::vector<char> request);
-  std::vector<char> receiveResponse_();
+  std::vector<char> receiveResponse_(){return std::vector<char>{};};
 };
 
 #endif
