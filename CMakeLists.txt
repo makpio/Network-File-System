@@ -21,3 +21,16 @@ add_executable(server ${SOURCES_SERVER})
 
 target_link_libraries(client libnfs)
 target_link_libraries(server libnfs)
+
+MESSAGE("adding tests")
+
+file(GLOB TESTS "tests/*.cpp")
+
+foreach(TEST ${TESTS})
+    MESSAGE("adding ${TEST}")
+    get_filename_component(NAME "test_${TEST}" NAME)
+    add_executable(${NAME} ${TEST})
+    target_link_libraries(${NAME} libnfs)
+    target_link_libraries(${NAME} client)
+
+endforeach()
