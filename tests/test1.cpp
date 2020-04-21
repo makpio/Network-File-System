@@ -1,5 +1,9 @@
 #include <iostream>
+#include "include/lib.hpp"
+
 
 int main(){
-    std::cout<<"testy sie kompiluja\n\n";
+	NFSClient* m;
+	m->close(5);
+	std::cout<<"chuj \n";
 }
