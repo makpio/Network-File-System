@@ -5,13 +5,16 @@ project(NFS)
 
 file(GLOB SOURCES_CORE "libraries/core/*.cpp" "libraries/core/*.hpp")
 message( "${SOURCES_CORE}")
-add_library(libnfs ${SOURCES_CORE})
+add_library(core ${SOURCES_CORE})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/build/")
+MESSAGE("libraries in ${CMAKE_CURRENT_SOURCE_DIR}/build")
 
 file(GLOB SOURCES_CLIENT "libraries/client/*.cpp" "libraries/client/*.hpp")
+
 add_library(client ${SOURCES_CLIENT})
 
 
@@ -19,8 +22,8 @@ file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
 add_executable(server ${SOURCES_SERVER})
 
 
-target_link_libraries(client libnfs)
-target_link_libraries(server libnfs)
+target_link_libraries(client PUBLIC core)
+target_link_libraries(server PUBLIC core)
 
 MESSAGE("adding tests")
 
@@ -30,7 +33,7 @@ foreach(TEST ${TESTS})
     MESSAGE("adding ${TEST}")
     get_filename_component(NAME "test_${TEST}" NAME)
     add_executable(${NAME} ${TEST})
-    target_link_libraries(${NAME} libnfs)
-    target_link_libraries(${NAME} client)
+    target_link_libraries(${NAME} PUBLIC core)
+    target_link_libraries(${NAME} PUBLIC client)
 
 endforeach()
