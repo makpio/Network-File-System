@@ -26,8 +26,8 @@ public:
   int closedir(int dirfd);
 
 private:
-  void sendRequest_(std::vector<char> request);
-  std::vector<char> receiveResponse_();
+  void sendRequest_(std::vector<u_int8_t> request);
+  std::vector<u_int8_t> receiveResponse_();
 };
 
 #endif
