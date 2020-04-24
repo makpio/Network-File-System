@@ -17,8 +17,16 @@ int main() {
   MessageBuilder builder;
   builder.writeMessageType(1);
   builder.write((u_int8_t) 2);
+  builder.write((int32_t)0x12345678);
+  builder.write((u_int64_t)0x1234567890ABCDEF);
   std::vector<u_int8_t> result = builder.build();
-  std::vector<u_int8_t> expected = std::vector<u_int8_t>{1, 0, 0, 0, 1, 2};
-
+  std::vector<u_int8_t> expected = std::vector<u_int8_t>{
+    0x01,
+    0x00, 0x00, 0x00, 13,
+    2,
+    0x12, 0x34, 0x56, 0x78,
+    0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF
+  };
+  
   std::cout << (result == expected) << std::endl;
 }
