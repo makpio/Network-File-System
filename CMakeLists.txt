@@ -17,9 +17,22 @@ add_library(libclient ${SOURCES_LIBCLIENT})
 
 file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
 add_executable(server ${SOURCES_SERVER})
-target_link_libraries(server libcore)
+target_link_libraries(server PUBLIC libcore)
 
 file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp")
 add_executable(client ${SOURCES_CLIENT})
-target_link_libraries(libclient libcore)
-target_link_libraries(client libclient)
+target_link_libraries(libclient PUBLIC libcore)
+target_link_libraries(client PUBLIC libclient)
+
+MESSAGE("adding tests")
+
+file(GLOB TESTS "tests/*.cpp")
+
+foreach(TEST ${TESTS})
+    MESSAGE("adding ${TEST}")
+    get_filename_component(NAME "test_${TEST}" NAME_WE)
+    add_executable(${NAME} ${TEST})
+    target_link_libraries(${NAME} PUBLIC libcore)
+    target_link_libraries(${NAME} PUBLIC libclient)
+
+endforeach()
