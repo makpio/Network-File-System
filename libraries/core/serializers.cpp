@@ -16,7 +16,7 @@ MessageBuilder::MessageBuilder() {
 } 
 
 void MessageBuilder::writeMessageType(MessageType type) {
-  buffer_[0] = (u_int8_t) type;
+  buffer_[MESSAGE_TYPE_OFFSET_] = (u_int8_t) type;
 };
 
 void MessageBuilder::write(u_int8_t x) {
@@ -54,16 +54,35 @@ void MessageBuilder::write(std::string str) {
 
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++) 
-    buffer_[1 + i] = (data_len_ >> ((3 - i) * 8));
+    buffer_[DATA_SIZE_OFFSET_ + i] = (data_len_ >> ((3 - i) * 8));
+
   return buffer_;
 };
 
 
-MessageParser::MessageParser(std::vector<u_int8_t>) {};
+MessageParser::MessageParser(std::vector<u_int8_t> byte_message) {
+  buffer_ = byte_message;
+  next_data_ = DATA_OFFSET_;
+};
 
-MessageType MessageParser::readMessageType() {};
+MessageType MessageParser::readMessageType() {
+  MessageType result = static_cast<MessageType>(buffer_[MESSAGE_TYPE_OFFSET_]);
+  return result;
+};
+int32_t MessageParser::readSize() {
+  int32_t result = 0;
+  for (int i = 0; i < 4; i++) 
+    result += (buffer_[DATA_SIZE_OFFSET_ + i] >> ((3 - i) * 8));
 
-u_int8_t MessageParser::readUInt8T() {};
+  return result;
+};
+
+u_int8_t MessageParser::readUInt8T() {
+  u_int8_t result = buffer_[next_data_];
+  next_data_ += 1;
+
+  return result;
+};
 u_int32_t MessageParser::readInt32T() {};
 u_int64_t MessageParser::readUInt64T() {};
 std::vector<u_int8_t> MessageParser::readBytes() {};

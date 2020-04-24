@@ -8,6 +8,10 @@
 
 extern int test_libcore(int x);
 
+const size_t MESSAGE_TYPE_OFFSET_ = 0;
+const size_t DATA_SIZE_OFFSET_ = 1;
+const size_t DATA_OFFSET_ = 5;
+
 /* message schema:
 
 - name: message_type
@@ -34,7 +38,6 @@ public:
 private:
   std::vector<u_int8_t> buffer_;
   size_t data_len_;
-  const size_t DATA_OFFSET_ = 5;
 };
 
 class MessageParser {
@@ -42,12 +45,17 @@ public:
   MessageParser(std::vector<u_int8_t>);
 
   MessageType readMessageType();
+  int32_t readSize();
 
   u_int8_t readUInt8T();
   u_int32_t readInt32T();
   u_int64_t readUInt64T();
   std::vector<u_int8_t> readBytes();
   std::string readString();
+
+private:
+  std::vector<u_int8_t> buffer_;
+  size_t next_data_;
 };
 
 /* byte_open_request data schema:
