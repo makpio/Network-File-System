@@ -29,6 +29,7 @@ public:
 
   void write(u_int8_t x);
   void write(int32_t x);
+  void write(u_int32_t x);
   void write(u_int64_t x);
   void write(char* buf, size_t size);
   void write(std::string str);
@@ -48,7 +49,8 @@ public:
   int32_t readSize();
 
   u_int8_t readUInt8T();
-  u_int32_t readInt32T();
+  int32_t readInt32T();
+  u_int32_t readUInt32T();
   u_int64_t readUInt64T();
   std::vector<u_int8_t> readBytes();
   std::string readString();
