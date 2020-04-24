@@ -41,7 +41,7 @@ class MessageParser {
 public:
   MessageParser(std::vector<u_int8_t>);
 
-  u_int8_t readMessageType();
+  MessageType readMessageType();
 
   u_int8_t readUInt8T();
   u_int32_t readInt32T();

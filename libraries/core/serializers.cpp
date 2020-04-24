@@ -37,12 +37,16 @@ void MessageBuilder::write(u_int64_t x) {
 };
 
 void MessageBuilder::write(char* buf, size_t size) {
+  write((int32_t)size);
+
   for (int i = 0; i < size; i++)
     buffer_.push_back(buf[i]);
   data_len_ += size;  
 };
 
 void MessageBuilder::write(std::string str) {
+  write((int32_t)str.size());
+
   for (char c: str)
     buffer_.push_back(c);
   data_len_ += str.size();
@@ -57,7 +61,7 @@ std::vector<u_int8_t> MessageBuilder::build() {
 
 MessageParser::MessageParser(std::vector<u_int8_t>) {};
 
-u_int8_t MessageParser::readMessageType() {};
+MessageType MessageParser::readMessageType() {};
 
 u_int8_t MessageParser::readUInt8T() {};
 u_int32_t MessageParser::readInt32T() {};
@@ -84,7 +88,7 @@ extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
 
 extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
-  u_int8_t message_type = request_parser.readMessageType();
+  MessageType message_type = request_parser.readMessageType();
   std::string path = request_parser.readString();
   int32_t oflag = request_parser.readInt32T();
   int32_t mode = request_parser.readInt32T();
@@ -109,7 +113,7 @@ extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
 
 extern OpenResponse DeserializeToOpenResponse(std::vector<u_int8_t> byte_response) {
   MessageParser request_parser(byte_response);
-  u_int8_t message_type = request_parser.readMessageType();
+  MessageType message_type = request_parser.readMessageType();
   int32_t result = request_parser.readInt32T();
   int32_t error = request_parser.readInt32T();
 
