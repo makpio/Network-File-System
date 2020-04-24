@@ -15,8 +15,8 @@ MessageBuilder::MessageBuilder() {
   data_len_ = 0;
 } 
 
-void MessageBuilder::writeMessageType(u_int8_t code) {
-  buffer_[0] = code;
+void MessageBuilder::writeMessageType(MessageType type) {
+  buffer_[0] = (u_int8_t) type;
 };
 
 void MessageBuilder::write(u_int8_t x) {
@@ -35,8 +35,18 @@ void MessageBuilder::write(u_int64_t x) {
     buffer_.push_back(x >> ((7 - i) * 8));
   data_len_ += 8;  
 };
-void MessageBuilder::write(char* buf, size_t size) {};
-void MessageBuilder::write(std::string str) {};
+
+void MessageBuilder::write(char* buf, size_t size) {
+  for (int i = 0; i < size; i++)
+    buffer_.push_back(buf[i]);
+  data_len_ += size;  
+};
+
+void MessageBuilder::write(std::string str) {
+  for (char c: str)
+    buffer_.push_back(c);
+  data_len_ += str.size();
+};
 
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++) 
@@ -57,7 +67,7 @@ std::string MessageParser::readString() {};
 
 
 extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
-  u_int8_t message_type = static_cast<u_int8_t> (MessageType::OPEN_REQUEST);
+  MessageType message_type = MessageType::OPEN_REQUEST;
   std::string path = open_request.path;
   int32_t oflag = open_request.oflag;
   int32_t mode = open_request.mode;
@@ -84,7 +94,7 @@ extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) 
 }
 
 extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
-  u_int8_t message_type = static_cast<u_int8_t> (MessageType::OPEN_RESPONSE);
+  MessageType message_type = MessageType::OPEN_RESPONSE;
   int32_t result = open_response.result;
   int32_t error = open_response.error;
 

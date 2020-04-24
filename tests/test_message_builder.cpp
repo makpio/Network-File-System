@@ -1,32 +1,33 @@
 #include <iostream>
 #include <sstream>
+#include <cassert>
+
+#include "./utils.hpp"
 
 #include "../libraries/core/serializers.hpp"
 
-std::string bytes_to_string(std::vector<u_int8_t> bytes) {
-  std::stringstream sstream;
-  for (std::vector<u_int8_t>::const_iterator i = bytes.begin(); i != bytes.end(); ++i)
-    sstream << int(*i) << ' ';
-
-  std::string result;
-  getline(sstream, result);
-  return result;
-}
 
 int main() {
   MessageBuilder builder;
-  builder.writeMessageType(1);
-  builder.write((u_int8_t) 2);
+  builder.writeMessageType(MessageType::CLOSE_REQUEST);
+  builder.write((u_int8_t)2);
   builder.write((int32_t)0x12345678);
   builder.write((u_int64_t)0x1234567890ABCDEF);
+  char buffer[] = {1, 2, 3, 4, 5};
+  builder.write(buffer, sizeof(buffer));
+  std::string str = "abcde";
+  builder.write(str);
   std::vector<u_int8_t> result = builder.build();
+
   std::vector<u_int8_t> expected = std::vector<u_int8_t>{
-    0x01,
-    0x00, 0x00, 0x00, 13,
+    (u_int8_t) MessageType::CLOSE_REQUEST,
+    0x00, 0x00, 0x00, 23,
     2,
     0x12, 0x34, 0x56, 0x78,
-    0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF
+    0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+    1, 2, 3, 4, 5,
+    'a', 'b', 'c', 'd', 'e'
   };
-  
-  std::cout << (result == expected) << std::endl;
+
+  assert(result == expected);
 }

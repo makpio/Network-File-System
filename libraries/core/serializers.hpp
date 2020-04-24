@@ -21,7 +21,7 @@ class MessageBuilder {
 public:
   MessageBuilder();
 
-  void writeMessageType(u_int8_t code);
+  void writeMessageType(MessageType type);
 
   void write(u_int8_t x);
   void write(int32_t x);
