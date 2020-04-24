@@ -1,6 +1,13 @@
 #include "lib.hpp"
-#include "lib/serializers.hpp"
-#include "lib/messages.hpp"
+
+#include "../core/messages.hpp"
+#include "../core/serializers.hpp"
+
+
+extern int test_libclient(int x) {
+  return test_libcore(x) * 321;
+};
+
 extern int error;
 
 NFSClient::NFSClient(char *host, int port, char *user, char *password) {};
@@ -26,3 +33,7 @@ int NFSClient::unlink(const char *pathname) {}
 int NFSClient::opendir(const char *name) {}
 dirent *NFSClient::readdir(int dirfd) {}
 int NFSClient::closedir(int dirfd) {}
+
+
+void NFSClient::sendRequest_(std::vector<char> request) {};
+std::vector<char> NFSClient::receiveResponse_() {};

@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <vector>
 
+extern int test_libclient(int x);
+
 extern int error;
 
 class NFSClient {
@@ -25,7 +27,7 @@ public:
 
 private:
   void sendRequest_(std::vector<char> request);
-  std::vector<char> receiveResponse_(){return std::vector<char>{};};
+  std::vector<char> receiveResponse_();
 };
 
 #endif

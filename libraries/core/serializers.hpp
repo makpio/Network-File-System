@@ -6,6 +6,8 @@
 
 #include "./messages.hpp"
 
+extern int test_libcore(int x);
+
 /* message schema:
 
 - name: message_type

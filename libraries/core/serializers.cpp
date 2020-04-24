@@ -5,6 +5,10 @@
 #include "./serializers.hpp"
 
 
+extern int test_libcore(int x) {
+  return x * 123;
+};
+
 void MessageBuilder::writeMessageType(u_int8_t code) {};
 
 void MessageBuilder::write(u_int8_t x) {};
