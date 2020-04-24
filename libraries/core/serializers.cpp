@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -10,8 +11,8 @@ extern int test_libcore(int x) {
 };
 
 MessageBuilder::MessageBuilder() {
-  buffer_ = std::vector<u_int8_t>(2);
-  len_ = 0;
+  buffer_ = std::vector<u_int8_t>(DATA_OFFSET_);
+  data_len_ = 0;
 } 
 
 void MessageBuilder::writeMessageType(u_int8_t code) {
@@ -19,22 +20,29 @@ void MessageBuilder::writeMessageType(u_int8_t code) {
 };
 
 void MessageBuilder::write(u_int8_t x) {
-  buffer_[DATA_OFFSET_ + len_] = x;
-  len_ += 1;
+  buffer_.push_back(x);
+  data_len_ += 1;
 };
 
 void MessageBuilder::write(int32_t x) {
-    for (int i = 0; i < 4; i++)
-      buffer_[DATA_OFFSET_ + len_ + 3 - i] = (x >> (i * 8));
-
-    len_ += 1;  
+  for (int i = 0; i < 4; i++)
+    buffer_.push_back(x >> ((3 - i) * 8));
+  data_len_ += 4;  
 };
 
-void MessageBuilder::write(u_int64_t x) {};
+void MessageBuilder::write(u_int64_t x) {
+  for (int i = 0; i < 8; i++)
+    buffer_.push_back(x >> ((7 - i) * 8));
+  data_len_ += 8;  
+};
 void MessageBuilder::write(char* buf, size_t size) {};
 void MessageBuilder::write(std::string str) {};
 
-std::vector<u_int8_t> MessageBuilder::build() {};
+std::vector<u_int8_t> MessageBuilder::build() {
+  for (int i = 0; i < 4; i++) 
+    buffer_[1 + i] = (data_len_ >> ((3 - i) * 8));
+  return buffer_;
+};
 
 
 MessageParser::MessageParser(std::vector<u_int8_t>) {};

@@ -13,7 +13,7 @@ extern int test_libcore(int x);
 - name: message_type
   type: u_int8_t
 - name: data_size
-  type: u_int64_t
+  type: u_int32_t
 - name: data
   len: char[`data_size`]
 */
@@ -33,8 +33,8 @@ public:
 
 private:
   std::vector<u_int8_t> buffer_;
-  size_t len_;
-  const size_t DATA_OFFSET_ = 2;
+  size_t data_len_;
+  const size_t DATA_OFFSET_ = 5;
 };
 
 class MessageParser {
