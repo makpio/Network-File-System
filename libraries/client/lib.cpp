@@ -10,8 +10,8 @@ extern int test_libclient(int x) {
 
 extern int error;
 
-NFSClient::NFSClient(char *host, int port, char *user, char *password) {};
-int NFSClient::connect() {};
+NFSClient::NFSClient() {};
+int NFSClient::connect(char *host, int port, char *user, char *password) {};
 
 int NFSClient::open(char *path, int oflag, int mode) {
     OpenRequest open_request {path, oflag, mode};

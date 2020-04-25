@@ -11,8 +11,8 @@ extern int error;
 
 class NFSClient {
 public:
-  NFSClient(char *host, int port, char *user, char *password);
-  int connect();
+  NFSClient();
+  int connect(char *host, int port, char *user, char *password);
 
   int open(char *path, int oflag, int mode);
   ssize_t read(int fd, void *buf, size_t count);
