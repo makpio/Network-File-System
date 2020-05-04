@@ -77,4 +77,7 @@ struct CloseResponse {
   int error;
 };
 
+extern void sendMessage(int fd, std::vector<u_int8_t> request);
+extern std::vector<u_int8_t> receiveMessage(int fd);
+
 #endif

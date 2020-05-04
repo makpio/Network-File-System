@@ -17,7 +17,7 @@ int main(){
     client.connect4(HOST, PORT, USER, PASSWORD);
     std::cout << "connected" << std::endl;
 
-    std::vector<u_int8_t> request = {'w', 'e', 'l', 'l', 'c', 'o', 'm', 'e'};
+    std::vector<u_int8_t> request = {0x1, 0, 0, 1, 4, 1, 2, 3, 4};
     client.sendRequest_(request);
 
     // int fd = client.open("/home/kowies/plik.txt", O_RDONLY, 0);
