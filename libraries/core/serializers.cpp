@@ -78,7 +78,7 @@ MessageType MessageParser::readMessageType() {
 int32_t MessageParser::readSize() {
   int32_t result = 0;
   for (int i = 0; i < 4; i++) 
-    result += (static_cast<int32_t>(buffer_[DATA_SIZE_OFFSET_ + i]) >> ((3 - i) * 8));
+    result += (static_cast<int32_t>(buffer_[DATA_SIZE_OFFSET_ + i]) << ((3 - i) * 8));
 
   return result;
 };
