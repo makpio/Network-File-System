@@ -65,5 +65,8 @@ int NFSClient::opendir(const char *name) {}
 dirent *NFSClient::readdir(int dirfd) {}
 int NFSClient::closedir(int dirfd) {}
 
-void NFSClient::sendRequest_(std::vector<u_int8_t> request) {};
+void NFSClient::sendRequest_(std::vector<u_int8_t> request) {
+  send(socket_fd_, static_cast<void*>(request.data()), request.size(), 0);
+};
+
 std::vector<u_int8_t> NFSClient::receiveResponse_() {};
