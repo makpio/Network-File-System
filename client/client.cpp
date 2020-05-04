@@ -13,12 +13,14 @@ char *PASSWORD = "password";
 
 int main(){
     NFSClient client;
-    client.connect(HOST, PORT, USER, PASSWORD);
+    std::cout << "try to connect" << std::endl;
+    client.connect4(HOST, PORT, USER, PASSWORD);
+    std::cout << "connected" << std::endl;
 
-    int fd = client.open("/home/kowies/plik.txt", O_RDONLY, 0);
+    // int fd = client.open("/home/kowies/plik.txt", O_RDONLY, 0);
 
-    char buffer[1024];
-    client.read(fd, buffer, 1024);
+    // char buffer[1024];
+    // client.read(fd, buffer, 1024);
 
-    std::cout << buffer << std::endl;
+    // std::cout << buffer << std::endl;
 }
