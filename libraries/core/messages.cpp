@@ -7,7 +7,6 @@
 #include "./messages.hpp"
 #include "./serializers.hpp"
 
-#include "../../tests/utils.hpp" // ToDo: Remove this line
 
 extern void sendMessage(int fd, std::vector<u_int8_t> request) {
   send(fd, static_cast<void *>(request.data()), request.size(), 0);
