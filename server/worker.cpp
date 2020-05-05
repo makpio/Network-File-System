@@ -20,8 +20,8 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
     int result = open(request.path.c_str(), request.oflag, request.mode);
 
     OpenResponse response = {result, errno};
-    std::cout << "result: " << result << std::endl;
-    std::cout << "errno: " << errno << std::endl;
+    std::cout << "fd: " << result << std::endl;
+    std::cout << "error: " << errno << std::endl;
 
     std::vector<u_int8_t> byte_response = SerializeOpenResponse(response);
     return byte_response;

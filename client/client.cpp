@@ -20,6 +20,7 @@ int main(){
     char *path = "../README.md";
     int fd = client.open(path, O_RDONLY, 0);
     std::cout << "fd: " << fd << std::endl;
+    std::cout << "error: " << error << std::endl;
 
     // char buffer[1024];
     // client.read(fd, buffer, 1024);
