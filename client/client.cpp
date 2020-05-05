@@ -22,8 +22,10 @@ int main(){
     std::cout << "fd: " << fd << std::endl;
     std::cout << "error: " << error << std::endl;
 
-    // char buffer[1024];
-    // client.read(fd, buffer, 1024);
-
-    // std::cout << buffer << std::endl;
+    char buffer[1024];
+    int len = client.read(fd, buffer, 1023);
+    buffer[len] = 0;
+    std::cout << "len: " << len << std::endl;
+    std::cout << "error: " << error << std::endl;
+    std::cout << "buffer: " << buffer << std::endl;
 }

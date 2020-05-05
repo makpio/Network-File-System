@@ -32,6 +32,7 @@ public:
   void write(u_int32_t x);
   void write(u_int64_t x);
   void write(char* buf, size_t size);
+  void write(std::vector<u_int8_t> bytes);
   void write(std::string str);
 
   std::vector<u_int8_t> build();

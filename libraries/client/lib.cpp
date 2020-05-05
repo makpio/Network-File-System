@@ -16,6 +16,21 @@
 #include "../core/messages.hpp"
 #include "../core/serializers.hpp"
 
+
+#include <sstream>
+#include <string>
+#include <vector>
+
+std::string bytes_to_string2(std::vector<u_int8_t> bytes) {
+  std::stringstream sstream;
+  for (std::vector<u_int8_t>::const_iterator i = bytes.begin(); i != bytes.end(); ++i)
+    sstream << int(*i) << ' ';
+
+  std::string result;
+  getline(sstream, result);
+  return result;
+}
+
 extern int test_libclient(int x) { return test_libcore(x) * 321; };
 
 extern int error = -1;
@@ -63,7 +78,7 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
   sendRequest_(byte_request);
   std::vector<u_int8_t> byte_response = receiveResponse_();
 
-  ReadResponse read_response = DeserializeToReadResponse(byte_request);
+  ReadResponse read_response = DeserializeToReadResponse(byte_response);
   error = read_response.error;
   memcpy(buf, read_response.buf.data(), read_response.result);
   return read_response.result;
