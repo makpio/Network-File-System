@@ -43,13 +43,13 @@ struct ReadRequest {
 
 struct ReadResponse {
   int result;
-  std::vector<char> buf;
+  std::vector<u_int8_t> buf;
   int error;
 };
 
 struct WriteRequest {
   int fd;
-  std::vector<char> buf;
+  std::vector<u_int8_t> buf;
 };
 
 struct WriteResponse {

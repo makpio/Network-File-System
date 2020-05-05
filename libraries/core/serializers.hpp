@@ -62,10 +62,8 @@ private:
 
 /* byte_open_request data schema:
 
-- name: path_size
-  type: u_int8_t
 - name: path
-  type: char[`path_size`]
+  type: string
 - name: oflag
   type: int32_t
 - name: mode
@@ -85,7 +83,7 @@ extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response);
 extern OpenResponse DeserializeToOpenResponse(std::vector<u_int8_t> byte_response);
 
 
-/* byte_open_request data schema:
+/* byte_read_request data schema:
 
 - name: fd
   type: int32_t
@@ -95,10 +93,12 @@ extern OpenResponse DeserializeToOpenResponse(std::vector<u_int8_t> byte_respons
 extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request);
 extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request);
 
-/* byte_open_response data schema:
+/* byte_read_response data schema:
 
   - name: result
     type: int32_t
+  - name: buf
+    type: bytes
   - name: error
     type: int32_t
 */
