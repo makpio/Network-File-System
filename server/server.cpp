@@ -4,16 +4,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "../libraries/core/serializers.hpp"
+#include "./worker.cpp"
+
 
 const u_int PORT = 9000;
 const u_int HOW_MANY_CONNECTION = 5;
 
-void worker(int socket_fd) {
-  std::cout << "I am working!" << std::endl;
-  receiveMessage(socket_fd);
-  close(socket_fd);
-}
 
 int main() {
   int server_fd;

@@ -35,7 +35,8 @@ extern std::vector<u_int8_t> receiveMessage(int fd) {
   how_many_read = 0;
   while (how_many_read != how_many_need_to_read) {
     int last_read =
-        read(fd, buffer, std::min(buffer_size, how_many_need_to_read - how_many_read));
+        read(fd, buffer,
+             std::min(buffer_size, how_many_need_to_read - how_many_read));
     if (last_read <= 0) {
       perror("reading stream message");
       exit(4);

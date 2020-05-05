@@ -72,7 +72,6 @@ private:
   type: int32_t
 */
 extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request);
-
 extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request);
 
 /* byte_open_response data schema:
@@ -83,7 +82,27 @@ extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request);
     type: int32_t
 */
 extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response);
-
 extern OpenResponse DeserializeToOpenResponse(std::vector<u_int8_t> byte_response);
+
+
+/* byte_open_request data schema:
+
+- name: fd
+  type: int32_t
+- name: count
+  type: int32_t
+*/
+extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request);
+extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request);
+
+/* byte_open_response data schema:
+
+  - name: result
+    type: int32_t
+  - name: error
+    type: int32_t
+*/
+extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response);
+extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response);
 
 #endif

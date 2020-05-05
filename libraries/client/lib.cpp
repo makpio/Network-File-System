@@ -17,7 +17,7 @@
 
 extern int test_libclient(int x) { return test_libcore(x) * 321; };
 
-extern int error;
+extern int error = -1;
 
 NFSClient::NFSClient(){};
 int NFSClient::connect4(char *host, int port, char *user, char *password) {
@@ -64,6 +64,7 @@ int NFSClient::unlink(const char *pathname) {}
 int NFSClient::opendir(const char *name) {}
 dirent *NFSClient::readdir(int dirfd) {}
 int NFSClient::closedir(int dirfd) {}
+
 
 void NFSClient::sendRequest_(std::vector<u_int8_t> request) {
   sendMessage(socket_fd_, request);

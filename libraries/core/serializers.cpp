@@ -180,8 +180,17 @@ extern OpenResponse DeserializeToOpenResponse(std::vector<u_int8_t> byte_respons
   MessageParser request_parser(byte_response);
   MessageType message_type = request_parser.readMessageType();
   int32_t result = request_parser.readInt32T();
+  
   int32_t error = request_parser.readInt32T();
 
   OpenResponse open_response{result, error};
   return open_response;
+}
+
+extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request) {
+
+}
+
+extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request) {
+
 }

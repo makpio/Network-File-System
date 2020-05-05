@@ -27,7 +27,6 @@ public:
 
 private:
   int socket_fd_ = -1;
-public:
   void sendRequest_(std::vector<u_int8_t> request);
   std::vector<u_int8_t> receiveResponse_();
 };

@@ -17,10 +17,9 @@ int main(){
     client.connect4(HOST, PORT, USER, PASSWORD);
     std::cout << "connected" << std::endl;
 
-    std::vector<u_int8_t> request = {0x1, 0, 0, 1, 4, 1, 2, 3, 4};
-    client.sendRequest_(request);
-
-    // int fd = client.open("/home/kowies/plik.txt", O_RDONLY, 0);
+    char *path = "../README.md";
+    int fd = client.open(path, O_RDONLY, 0);
+    std::cout << "fd: " << fd << std::endl;
 
     // char buffer[1024];
     // client.read(fd, buffer, 1024);
