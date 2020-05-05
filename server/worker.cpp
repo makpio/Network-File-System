@@ -14,14 +14,19 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   switch (parser.readMessageType()) {
 
   case MessageType::OPEN_REQUEST:
-    std::cout << "OPEN_REQUEST" << std::endl;
+    std::cout << "OPEN" << std::endl;
 
     OpenRequest request = DeserializeToOpenRequest(byte_request);
+    std::cout << "Request:" << std::endl;
+    std::cout << "  path: " << request.path << std::endl;
+    std::cout << "  oflag: " << request.oflag << std::endl;
+    std::cout << "  mode: " << request.mode << std::endl;
     int result = open(request.path.c_str(), request.oflag, request.mode);
 
     OpenResponse response = {result, errno};
-    std::cout << "fd: " << result << std::endl;
-    std::cout << "error: " << errno << std::endl;
+    std::cout << "Response:" << std::endl;
+    std::cout << "  fd: " << response.result << std::endl;
+    std::cout << "  error: " << response.error << std::endl;
 
     std::vector<u_int8_t> byte_response = SerializeOpenResponse(response);
     return byte_response;
