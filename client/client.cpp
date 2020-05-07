@@ -4,6 +4,7 @@
 
 #include "../libraries/client/lib.hpp"
 #include "utils.h"
+#include "loop.h"
 
 
 char *HOST = "localhost";
@@ -12,10 +13,21 @@ char *USER = "user";
 char *PASSWORD = "password";
 
 
+#include <signal.h>
+
+void signal_callback_handler(int signum) {
+   std::cout << "\n\nSpadam stad z powodu: " << signum << std::endl;
+   // Terminate program
+   exit(signum);
+}
 
 
 int main(){
+    signal(SIGINT, signal_callback_handler);
+
     display_welcome_message();
+
+    run_loop();
     // NFSClient client;
     // std::cout << "try to connect" << std::endl;
     // client.connect4(HOST, PORT, USER, PASSWORD);
