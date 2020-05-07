@@ -3,6 +3,7 @@
 
 
 void display_welcome_message(){
+    std::cout<<"Welcome to micro NFS! \n\n";
     std::cout<<"         _   _  ______  _____ "<<'\n';
     std::cout<<"        | \\ | ||  ____|/ ____|"<<'\n';
     std::cout<<"  _   _ |  \\| || |__  | (___  "<<'\n';
@@ -10,8 +11,24 @@ void display_welcome_message(){
     std::cout<<" | |_| || |\\  || |     ____) |"<<'\n';
     std::cout<<" | ._,_||_| \\_||_|    |_____/ "<<'\n';
     std::cout<<" | |                          "<<'\n';
-    std::cout<<" |_|   \n\n\n\n\n"<<std::endl;
+    std::cout<<" |_|   \n\n"<<std::endl;
 
 
+    display_help_prompt();
+}
+
+void disp_prompt(){
+    std::cout<<">>>";
+}
+
+void display_error_message(){
+    std::cout<<"sory mordzia; twoja komenda nie smiga :/ \n";
+};
+void display_help_prompt(){
     std::cout<<"Type 'help' for help :) "<<std::endl;
+};
+
+void display_help(){
+    std::cout<<"No na razie nic nie śmiaga w sumie\n\n";
+    std::cout<<"help - wyswietla to menu\n";
 }
