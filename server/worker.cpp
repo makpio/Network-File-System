@@ -1,5 +1,4 @@
-#ifndef WORKER_CPP
-#define WORKER_CPP
+
 
 #include <fcntl.h>
 #include <iostream>
@@ -11,6 +10,7 @@
 #include "../libraries/core/serializers.hpp"
 
 #include "../tests/utils.hpp"
+#include "worker.h"
 
 std::vector<u_int8_t> open_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "OPEN" << std::endl;
@@ -77,4 +77,3 @@ void worker(int socket_fd) {
   }
 }
 
-#endif

@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "./worker.cpp"
+#include "worker.h"
 
 
 const u_int PORT = 9000;
