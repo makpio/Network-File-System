@@ -1,11 +1,16 @@
 #include "command.h"
 #include <iostream>
+#include <sstream>
+#include <string>
 
 Command get_command(){
     std::string s;
-    std::cin>>s;
+    std::getline(std::cin, s);
 
-    std::string command_type = get_command_type(s);
+    std::string command_type;
+
+    std::stringstream ss(s);
+    ss>>command_type;
 
     Command c;
     c.command_string = s;
@@ -14,6 +19,8 @@ Command get_command(){
         c.type = Command::Help;
     }else if(command_type.find(std::string("get")) != std::string::npos){
         c.type = Command::Get;
+    }else if(command_type == ""){
+        c.type = Command::Empty;
     }else{
         c.type = Command::Invalid_command;    
     }

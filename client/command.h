@@ -6,12 +6,13 @@ struct C{
 
     std::string command_string;
 
-
     int type = -1;
     static const int Invalid_command = -1;
+    static const int Empty = 0;
     static const int Get = 1;
     static const int Put = 2;
     static const int Help = 3;
+
 }typedef Command;
 
 Command get_command();
