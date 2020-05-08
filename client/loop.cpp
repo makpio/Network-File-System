@@ -5,7 +5,8 @@
 #include <iostream>
 
 int run_loop(){
-    while(1){
+    bool _run = true;
+    while(_run){
         disp_prompt();
         Command c = get_command();
 
@@ -28,7 +29,13 @@ int run_loop(){
                 get_handler(c, &s);
                 break;
             }
-            
+            case Command::Exit:{
+                std::cout<<'\n';
+                disp_prompt();
+                std::cout<<"exit\n";
+                _run = false;
+                break;
+            }
         }
     }
 }

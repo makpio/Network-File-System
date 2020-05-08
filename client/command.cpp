@@ -6,6 +6,13 @@
 Command get_command(){
     std::string s;
     std::getline(std::cin, s);
+    if (std::cin.eof()==1) {
+        std::cin.clear();
+        std::cin.ignore();
+        Command c;
+        c.type = Command::Exit;
+        return c;    
+    }
 
     std::string command_type;
 
@@ -19,6 +26,8 @@ Command get_command(){
         c.type = Command::Help;
     }else if(command_type.find(std::string("get")) != std::string::npos){
         c.type = Command::Get;
+    }else if(command_type.find(std::string("exit")) != std::string::npos){
+        c.type = Command::Exit;
     }else if(command_type == ""){
         c.type = Command::Empty;
     }else{

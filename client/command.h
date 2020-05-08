@@ -12,6 +12,7 @@ struct C{
     static const int Get = 1;
     static const int Put = 2;
     static const int Help = 3;
+    static const int Exit = 4;
 
 }typedef Command;
 
