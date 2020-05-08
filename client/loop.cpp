@@ -1,6 +1,7 @@
 #include "loop.h"
 #include "command.h"
 #include "utils.h"
+#include "command_handlers/handlers.h"
 #include <iostream>
 
 int run_loop(){
@@ -8,18 +9,23 @@ int run_loop(){
         disp_prompt();
         Command c = get_command();
 
-        if(c.type == Command::Invalid_command){
-            display_error_message();
-            display_help_prompt();
-        }
 
         switch(c.type){
+            case Command::Invalid_command:{
+                display_error_message();
+                display_help_prompt();
+                break;
+            }
+            case Command::Empty:{
+                continue;
+            }
             case Command::Help:{
                 display_help();
                 break;
             }
             case Command::Get:{
-                std::cout<<"Komenda get jeszcze nie obslugiwana\n";
+                Mock_saver s;
+                get_handler(c, &s);
                 break;
             }
             
