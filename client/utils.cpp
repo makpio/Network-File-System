@@ -32,3 +32,13 @@ void display_help(){
     std::cout<<"No na razie nic nie śmiaga w sumie\n\n";
     std::cout<<"help - wyswietla to menu\n";
 }
+
+std::string convertToString(char* a, int size) { 
+    int i; 
+    std::string s = ""; 
+    for (i = 0; i < size; i++) { 
+        s = s + a[i]; 
+    } 
+    return s; 
+} 
+  
