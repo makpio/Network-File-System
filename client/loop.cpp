@@ -4,14 +4,14 @@
 #include "command_handlers/handlers.h"
 #include <iostream>
 
-int run_loop(){
+int run_loop(Connector* connector, bool& exit){
     bool _run = true;
-    while(_run){
+    while(_run && (!exit)){
         disp_prompt();
-        Command c = get_command();
+        Command command = get_command();
 
 
-        switch(c.type){
+        switch(command.type){
             case Command::Invalid_command:{
                 display_error_message();
                 display_help_prompt();
@@ -26,7 +26,7 @@ int run_loop(){
             }
             case Command::Get:{
                 Mock_saver s;
-                get_handler(c, &s);
+                get_handler(command, &s, connector);
                 break;
             }
             case Command::Exit:{

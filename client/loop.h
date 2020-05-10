@@ -1,6 +1,8 @@
 #ifndef LOOP_H
 #define LOOP_H
 
-int run_loop();
+
+#include "connector.h"
+int run_loop(Connector* connector, bool& exit);
 
 #endif
