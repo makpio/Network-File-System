@@ -2,7 +2,7 @@
 #include <sstream>
 #include <limits>
 
-bool get_handler(Command c, Saver* saver){
+bool get_handler(Command c, Saver* saver, Connector* connector){
     if(c.type != Command::Get){
         throw -1;
     }
@@ -13,8 +13,15 @@ bool get_handler(Command c, Saver* saver){
     ss >> source;
     ss >> dst;
 
-    saver->save(dst, nullptr, 0);
+    char buf[4096];
 
+    FileDescriptor fd = connector->open(dst, std::ios::in, 0);
+    int len = connector->read(fd, buf, 4096);
+    connector->close(fd);
+    
 
+    saver->save(dst, buf, len);
+
+    return true;
 };
 
