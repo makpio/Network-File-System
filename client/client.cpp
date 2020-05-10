@@ -5,7 +5,7 @@
 #include "../libraries/client/lib.hpp"
 #include "utils.h"
 #include "loop.h"
-
+#include "connector.h"
 
 char *HOST = "localhost";
 int PORT = 9000;
@@ -15,19 +15,25 @@ char *PASSWORD = "password";
 
 #include <signal.h>
 
+bool uNFS_EXIT = false;
+
 void signal_callback_handler(int signum) {
    std::cout << "\n\nSpadam stad z powodu: " << signum << std::endl;
    // Terminate program
-   exit(signum);
+   uNFS_EXIT = true;
 }
 
 
 int main(){
     signal(SIGINT, signal_callback_handler);
 
+    LocalFSConnector* c = new LocalFSConnector(); 
+
     display_welcome_message();
 
-    run_loop();
+    run_loop(c, uNFS_EXIT);
+
+    delete c;
     // NFSClient client;
     // std::cout << "try to connect" << std::endl;
     // client.connect4(HOST, PORT, USER, PASSWORD);
