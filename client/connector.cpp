@@ -19,15 +19,21 @@ FileDescriptor LocalFSConnector::open(std::string path, int oflag, int mode){
 
 
 ssize_t LocalFSConnector::read(FileDescriptor fd, char *buf, size_t count){
-    std::fstream* s = open_files[fd];
-    s->get(buf, count);
-    return s->gcount();
+    // TODO: sprawdzić czy plik istnieje
+    if(open_files.find(fd) != open_files.end()){
+        std::fstream* s = open_files[fd];
+        s->get(buf, count);
+        return s->gcount();
+    }
+    
 }
 
 int LocalFSConnector::close(FileDescriptor fd){
-    open_files[fd]->close();
-    delete open_files[fd];
-    open_files.erase(fd);
+    if(open_files.find(fd) != open_files.end()){
+        open_files[fd]->close();
+        delete open_files[fd];
+        open_files.erase(fd);
+    }
 }
 
 LocalFSConnector::~LocalFSConnector(){

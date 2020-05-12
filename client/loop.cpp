@@ -38,4 +38,5 @@ int run_loop(Connector* connector, bool& exit){
             }
         }
     }
+    return 0;
 }

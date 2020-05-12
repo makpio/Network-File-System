@@ -15,7 +15,7 @@ bool get_handler(Command c, Saver* saver, Connector* connector){
 
     char buf[4096];
 
-    FileDescriptor fd = connector->open(dst, std::ios::in, 0);
+    FileDescriptor fd = connector->open(source, std::ios::in, 0);
     int len = connector->read(fd, buf, 4096);
     connector->close(fd);
     
