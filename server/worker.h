@@ -10,6 +10,16 @@ std::vector<u_int8_t> read_handler(std::vector<u_int8_t> byte_request);
 
 std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request);
 
-void worker(int socket_fd);
+class Worker {
+public:
+    Worker(int socket_fd){
+        this->socket_fd = socket_fd;
+    }
+    void Run(){
+
+    }
+private:
+    int socket_fd;
+};
 
 #endif

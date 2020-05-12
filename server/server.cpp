@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+#include <vector>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -38,12 +40,17 @@ int main() {
   printf("Socket port #%d\n", ntohs(server_addr.sin_port));
   listen(server_fd, 5);
 
+  auto workers = std::vector<std::thread>();
   while (true) {
     int socket_fd = accept(server_fd, (struct sockaddr *)0, (unsigned int *)0);
     if (socket_fd == -1) {
       perror("accept");
       exit(3);
     }
-    worker(socket_fd);
+    std::thread workerThread(Worker::Run, Worker(socket_fd));
+    workers.push_back(std::move(workerThread));
   }
+  for(auto& worker : workers)
+    worker.join();
+
 }
