@@ -34,6 +34,7 @@ public:
   void write(char* buf, size_t size);
   void write(std::vector<u_int8_t> bytes);
   void write(std::string str);
+  void write(off_t fs);
 
   std::vector<u_int8_t> build();
 
@@ -105,5 +106,20 @@ extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request);
 */
 extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response);
 extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response);
+
+
+//+
+extern std::vector<u_int8_t> SerializeWriteRequest(WriteRequest write_request);
+extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response);
+extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response);
+//
+extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request);
+extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response);
+extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response);
+//
 
 #endif

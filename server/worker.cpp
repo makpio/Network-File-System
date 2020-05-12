@@ -54,6 +54,33 @@ std::vector<u_int8_t> read_handler(std::vector<u_int8_t> byte_request) {
   return byte_response;
 }
 
+//+
+std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "WRITE" << std::endl;
+
+  WriteRequest request = DeserializeToWriteRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+  //std::cout << "  buf: " << request.buf << std::endl;
+
+  //std::vector<u_int8_t> buf = std::vector<u_int8_t>(request.count);
+  size_t nbytes = (size_t) sizeof(std::vector<u_int8_t>) + (sizeof(u_int8_t) * request.buf.size());
+
+  int result = write(request.fd, request.buf.data(), nbytes);
+
+  WriteResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeWriteResponse(response);
+  return byte_response;
+}
+
+
+
+
 std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   MessageParser parser = MessageParser(byte_request);
   switch (parser.readMessageType()) {
@@ -76,4 +103,5 @@ void worker(int socket_fd) {
     sendMessage(socket_fd, byte_response);
   }
 }
+
 
