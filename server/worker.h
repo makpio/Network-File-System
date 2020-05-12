@@ -1,6 +1,7 @@
 #ifndef WORKER_CPP
 #define WORKER_CPP
 #include <vector>
+#include <thread>
 
 #include <sys/types.h>
 
@@ -15,8 +16,11 @@ public:
     Worker(int socket_fd){
         this->socket_fd = socket_fd;
     }
-    void Run(){
+    void run(){
 
+    }
+    std::thread spawn() {
+      return std::thread( [this] { this->run(); } );
     }
 private:
     int socket_fd;

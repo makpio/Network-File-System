@@ -16,8 +16,10 @@ add_library(libclient ${SOURCES_LIBCLIENT})
 
 
 file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
+find_package( Threads )
 add_executable(server ${SOURCES_SERVER})
-target_link_libraries(server PUBLIC libcore)
+target_link_libraries(server PUBLIC libcore ${CMAKE_THREAD_LIBS_INIT})
+
 
 file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp")
 add_executable(client ${SOURCES_CLIENT})

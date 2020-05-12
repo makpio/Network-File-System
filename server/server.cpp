@@ -47,10 +47,8 @@ int main() {
       perror("accept");
       exit(3);
     }
-    std::thread workerThread(Worker::Run, Worker(socket_fd));
-    workers.push_back(std::move(workerThread));
+    workers.push_back(Worker(socket_fd).spawn());
   }
   for(auto& worker : workers)
     worker.join();
-
 }
