@@ -10,7 +10,7 @@ extern int test_libcore(int x) { return x * 123; };
 MessageBuilder::MessageBuilder() {
   buffer_ = std::vector<u_int8_t>(DATA_OFFSET_);
   data_len_ = 0;
-};
+}
 
 void MessageBuilder::writeMessageType(MessageType type) {
   buffer_[MESSAGE_TYPE_OFFSET_] = (u_int8_t)type;
@@ -62,13 +62,7 @@ void MessageBuilder::write(std::string str) {
     buffer_.push_back(c);
   data_len_ += str.size();
 };
-/*
-void MessageBuilder::write(off_t fs) {
-  for (int i = 0; i < 4; i++)
-    buffer_.push_back(fs >> ((3 - i) * 8));
-  data_len_ += 4;
-};
-*/
+
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++)
     buffer_[DATA_SIZE_OFFSET_ + i] = (data_len_ >> ((3 - i) * 8));
@@ -244,106 +238,3 @@ extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_respons
   ReadResponse read_response{result, buf, error};
   return read_response;
 };
-
-//+
-extern std::vector<u_int8_t> SerializeWriteRequest(WriteRequest write_request) {
-  MessageType message_type = MessageType::WRITE_REQUEST;
-  int32_t fd = write_request.fd;
-  std::vector<u_int8_t> buf = write_request.buf;
-
-  MessageBuilder request_builder;
-  request_builder.writeMessageType(message_type);
-  request_builder.write(fd);
-  request_builder.write(buf);
-
-  std::vector<u_int8_t> byte_request = request_builder.build();
-  return byte_request;
-}
-//+
-extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request) {
-  MessageParser request_parser(byte_request);
-  MessageType message_type = request_parser.readMessageType();
-  int32_t fd = request_parser.readInt32T();
-  std::vector<u_int8_t> buf = request_parser.readBytes();
-
-  WriteRequest write_request{fd, buf};
-  return write_request;
-}
-//+
-extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response) {
-  MessageType message_type = MessageType::WRITE_RESPONSE;
-  int32_t result = write_response.result;
-  int32_t error = write_response.error;
-
-  MessageBuilder response_builder;
-  response_builder.writeMessageType(message_type);
-  response_builder.write(result);
-  response_builder.write(error);
-
-  std::vector<u_int8_t> byte_response = response_builder.build();
-  return byte_response;
-};
-
-//+
-extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response) {
-  MessageParser response_parser(byte_response);
-  MessageType message_type = response_parser.readMessageType();
-  int32_t result = response_parser.readInt32T();
-  int32_t error = response_parser.readInt32T();
-
-  WriteResponse write_response{result, error};
-  return write_response;
-};
-/*
-//
-extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
-  MessageType message_type = MessageType::LSEEK_REQUEST;
-  int32_t fd = lseek_request.fd;
-  off_t offset = lseek_request.offset;
-  int32_t whence = lseek_request.whence;
-
-  MessageBuilder request_builder;
-  request_builder.writeMessageType(message_type);
-  request_builder.write(fd);
-  request_builder.write(offset);
-  request_builder.write(whence);
-
-  std::vector<u_int8_t> byte_request = request_builder.build();
-  return byte_request;
-}
-//
-extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request) {
-  MessageParser request_parser(byte_request);
-  MessageType message_type = request_parser.readMessageType();
-  int32_t fd = request_parser.readInt32T();
-  std::vector<u_int8_t> buf = request_parser.readBytes();
-
-  WriteRequest write_request{fd, buf};
-  return write_request;
-}
-//
-extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response) {
-  MessageType message_type = MessageType::WRITE_RESPONSE;
-  int32_t result = write_response.result;
-  int32_t error = write_response.error;
-
-  MessageBuilder response_builder;
-  response_builder.writeMessageType(message_type);
-  response_builder.write(result);
-  response_builder.write(error);
-
-  std::vector<u_int8_t> byte_response = response_builder.build();
-  return byte_response;
-};
-
-//
-extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response) {
-  MessageParser response_parser(byte_response);
-  MessageType message_type = response_parser.readMessageType();
-  int32_t result = response_parser.readInt32T();
-  int32_t error = response_parser.readInt32T();
-
-  WriteResponse write_response{result, error};
-  return write_response;
-};
-*/

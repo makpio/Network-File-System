@@ -83,32 +83,9 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
   memcpy(buf, read_response.buf.data(), read_response.result);
   return read_response.result;
 }
-//+
-ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
-  
-  const u_int8_t *uintBuff = (u_int8_t*) buf;
-  std::vector<u_int8_t>vectorBuff(uintBuff, uintBuff + count);
-  WriteRequest write_request{fd, vectorBuff};
-  std::vector<u_int8_t> byte_request = SerializeWriteRequest(write_request); 
- 
-  sendRequest_(byte_request);
-  std::vector<u_int8_t> byte_response = receiveResponse_();
-
-  WriteResponse read_response = DeserializeToWriteResponse(byte_response);
-  error = read_response.error;
-  return read_response.result;
-
-}
-//
-off_t NFSClient::lseek(int fd, off_t offset, int whence) {
-
-}
-
-int NFSClient::close(int fd) {
-  CloseRequest close_request{fd};
-
-}
-
+ssize_t NFSClient::write(int fd, const void *buf, size_t count) {}
+off_t NFSClient::lseek(int fd, off_t offset, int whence) {}
+int NFSClient::close(int fd) {}
 int NFSClient::unlink(const char *pathname) {}
 
 int NFSClient::opendir(const char *name) {}
