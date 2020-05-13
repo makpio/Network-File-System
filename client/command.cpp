@@ -28,6 +28,8 @@ Command get_command(){
         c.type = Command::Get;
     }else if(command_type.find(std::string("exit")) != std::string::npos){
         c.type = Command::Exit;
+    }else if(command_type.find(std::string("put")) != std::string::npos){
+        c.type = Command::Put;
     }else if(command_type == ""){
         c.type = Command::Empty;
     }else{
