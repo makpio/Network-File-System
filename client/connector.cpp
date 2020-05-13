@@ -1,4 +1,6 @@
 #include "connector.h"
+#include <iostream>
+
 
 int LocalFSConnector::connect(std::string host, uint port, std::string user, std::string passwd){
     return 1;
@@ -25,7 +27,15 @@ ssize_t LocalFSConnector::read(FileDescriptor fd, char *buf, size_t count){
         s->get(buf, count);
         return s->gcount();
     }
-    
+    return 0;
+}
+
+ssize_t LocalFSConnector::write(FileDescriptor fd, const char* buf, size_t count){
+    if(open_files.find(fd) != open_files.end()){
+        std::string s(buf, count);
+        std::cout<<s<<std::endl;
+    }
+    return 0;
 }
 
 int LocalFSConnector::close(FileDescriptor fd){

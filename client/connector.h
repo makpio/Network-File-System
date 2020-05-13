@@ -24,7 +24,7 @@ public:
     int connect(std::string host, uint port, std::string user, std::string passwd);
     FileDescriptor open(std::string path, int oflag, int mode);
     ssize_t read(FileDescriptor fd, char *buf, size_t count);
-    ssize_t write(FileDescriptor fd, const char* buf, size_t count){return 0;};
+    ssize_t write(FileDescriptor fd, const char* buf, size_t count);
     int close(FileDescriptor fd);
 
     ~LocalFSConnector();
