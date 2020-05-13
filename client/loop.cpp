@@ -1,5 +1,6 @@
 #include "loop.h"
 #include "command.h"
+#include "reader.h"
 #include "utils.h"
 #include "command_handlers/handlers.h"
 #include <iostream>
@@ -27,6 +28,11 @@ int run_loop(Connector* connector, bool& exit){
             case Command::Get:{
                 Mock_saver s;
                 get_handler(command, &s, connector);
+                break;
+            }
+            case Command::Put:{
+                Mock_reader r;
+                put_handler(command, &r, connector);
                 break;
             }
             case Command::Exit:{
