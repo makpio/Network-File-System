@@ -5,12 +5,19 @@
 
 class Saver{
     public:
-    virtual bool save(std::string name, char* buffer, uint len)=0;
+    virtual bool save(char* buffer, uint len)=0;
+    virtual bool open(std::string name)=0;
+    virtual void close()=0;
 };
 
 class Mock_saver: public Saver{
     public:
-    bool save(std::string name, char* buffer, uint len);
+    Mock_saver():name_(std::string("")){};
+    bool save(char* buffer, uint len);
+    bool open(std::string name);
+    void close();
+    private:
+    std::string name_;
 };
 
 #endif
