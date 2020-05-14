@@ -22,9 +22,11 @@ void MessageBuilder::write(u_int8_t x) {
 };
 
 void MessageBuilder::write(off_t x) {
-  buffer_.push_back(x);
-  data_len_ += 1;
+  for (int i = 0; i < 4; i++)
+    buffer_.push_back(x >> ((3 - i) * 8));
+  data_len_ += 4;
 };
+
 
 void MessageBuilder::write(int32_t x) {
   for (int i = 0; i < 4; i++)
@@ -173,7 +175,7 @@ extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
 extern OpenRequest
 DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
@@ -184,7 +186,7 @@ DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
 
   OpenRequest open_request{path, oflag, mode};
   return open_request;
-}
+};
 
 extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
   MessageType message_type = MessageType::OPEN_RESPONSE;
@@ -198,7 +200,8 @@ extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
+
 extern OpenResponse
 DeserializeToOpenResponse(std::vector<u_int8_t> byte_response) {
   MessageParser request_parser(byte_response);
@@ -208,7 +211,7 @@ DeserializeToOpenResponse(std::vector<u_int8_t> byte_response) {
 
   OpenResponse open_response{result, error};
   return open_response;
-}
+};
 
 extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request) {
   MessageType message_type = MessageType::READ_REQUEST;
@@ -222,7 +225,8 @@ extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
+
 extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
@@ -231,7 +235,7 @@ extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request) 
 
   ReadRequest read_request{fd, count};
   return read_request;
-}
+};
 
 extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
   MessageType message_type = MessageType::READ_RESPONSE;
@@ -248,6 +252,7 @@ extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
 };
+
 extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -272,7 +277,7 @@ extern std::vector<u_int8_t> SerializeWriteRequest(WriteRequest write_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
 //+
 extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
@@ -282,7 +287,7 @@ extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request
 
   WriteRequest write_request{fd, buf};
   return write_request;
-}
+};
 //+
 extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response) {
   MessageType message_type = MessageType::WRITE_RESPONSE;
@@ -309,7 +314,7 @@ extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_respo
   return write_response;
 };
 
-//
+//+
 extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
   MessageType message_type = MessageType::LSEEK_REQUEST;
   int32_t fd = lseek_request.fd;
@@ -324,8 +329,8 @@ extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
-//
+};
+//+
 extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
@@ -335,8 +340,8 @@ extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request
 
   LseekRequest lseek_request{fd, offset, whence};
   return lseek_request;
-}
-//
+};
+//+
 extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response) {
   MessageType message_type = MessageType::LSEEK_RESPONSE;
   off_t result = lseek_response.result; //?
@@ -350,8 +355,7 @@ extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
 };
-
-//
+//+
 extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -360,4 +364,50 @@ extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_respo
 
   LseekResponse lseek_response{result, error};
   return lseek_response;
+};
+
+//
+extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request) {
+  MessageType message_type = MessageType::CLOSE_REQUEST;
+  int32_t fd = close_request.fd;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(fd);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int32_t fd = request_parser.readInt32T();
+
+  CloseRequest close_request{fd};
+  return close_request;
+};
+//
+extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response) {
+  MessageType message_type = MessageType::CLOSE_RESPONSE;
+  int32_t result = close_response.result;
+  int32_t error = close_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int32_t result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  CloseResponse close_response{result, error};
+  return close_response;
 };

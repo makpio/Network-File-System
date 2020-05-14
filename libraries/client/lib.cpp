@@ -70,7 +70,8 @@ int NFSClient::open(char *path, int oflag, int mode) {
   OpenResponse open_response = DeserializeToOpenResponse(byte_response);
   error = open_response.error;
   return open_response.result;
-}
+};
+
 ssize_t NFSClient::read(int fd, void *buf, size_t count) {
   ReadRequest read_request{fd, count};
   std::vector<u_int8_t> byte_request = SerializeReadRequest(read_request);
@@ -82,7 +83,7 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
   error = read_response.error;
   memcpy(buf, read_response.buf.data(), read_response.result);
   return read_response.result;
-}
+};
 //+
 ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
   
@@ -99,7 +100,7 @@ ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
   error = write_response.error;
   return write_response.result;
 
-}
+};
 //+
 off_t NFSClient::lseek(int fd, off_t offset, int whence) {
   LseekRequest lseek_request{fd, offset, whence};
@@ -111,12 +112,19 @@ off_t NFSClient::lseek(int fd, off_t offset, int whence) {
   LseekResponse lseek_response = DeserializeToLseekResponse(byte_response);
   error = lseek_response.error;
   return lseek_response.result;
-}
-
+};
+//
 int NFSClient::close(int fd) {
   CloseRequest close_request{fd};
+  std::vector<u_int8_t> byte_request = SerializeCloseRequest(close_request); 
+ 
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
 
-}
+  CloseResponse close_response = DeserializeToCloseResponse(byte_response);
+  error = close_response.error;
+  return close_response.result;
+};
 
 int NFSClient::unlink(const char *pathname) {}
 

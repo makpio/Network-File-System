@@ -114,12 +114,17 @@ extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request
 
 extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response);
 extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response);
-//
+//+
 extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request);
 extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request);
 
 extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response);
 extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response);
 //
+extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request);
+extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response);
+extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_response);
 
 #endif

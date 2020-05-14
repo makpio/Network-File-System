@@ -76,7 +76,7 @@ std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
 
   std::vector<u_int8_t> byte_response = SerializeWriteResponse(response);
   return byte_response;
-}
+};
 
 //+
 std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
@@ -98,7 +98,26 @@ std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
 
   std::vector<u_int8_t> byte_response = SerializeLseekResponse(response);
   return byte_response;
-}
+};
+
+std::vector<u_int8_t> close_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "CLOSE" << std::endl;
+
+  CloseRequest request = DeserializeToCloseRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+
+  int result =  close(request.fd);
+
+  CloseResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeCloseResponse(response);
+  return byte_response;
+};
 
 std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   MessageParser parser = MessageParser(byte_request);
@@ -109,6 +128,10 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
     return read_handler(byte_request);
   case MessageType::WRITE_REQUEST:
     return write_handler(byte_request);
+  case MessageType::LSEEK_REQUEST:
+    return lseek_handler(byte_request);
+  case MessageType::CLOSE_REQUEST:
+    return close_handler(byte_request);
   default:
     return std::vector<u_int8_t>{0, 0, 0, 0, 0};
   }
