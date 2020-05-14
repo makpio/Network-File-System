@@ -34,7 +34,7 @@ public:
   void write(char* buf, size_t size);
   void write(std::vector<u_int8_t> bytes);
   void write(std::string str);
-  void write(off_t fs);
+  void write(off_t x);
 
   std::vector<u_int8_t> build();
 
@@ -49,7 +49,7 @@ public:
 
   MessageType readMessageType();
   int32_t readSize();
-
+  off_t readOffT();
   u_int8_t readUInt8T();
   int32_t readInt32T();
   u_int32_t readUInt32T();

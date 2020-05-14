@@ -21,6 +21,11 @@ void MessageBuilder::write(u_int8_t x) {
   data_len_ += 1;
 };
 
+void MessageBuilder::write(off_t x) {
+  buffer_.push_back(x);
+  data_len_ += 1;
+};
+
 void MessageBuilder::write(int32_t x) {
   for (int i = 0; i < 4; i++)
     buffer_.push_back(x >> ((3 - i) * 8));
@@ -85,6 +90,7 @@ MessageType MessageParser::readMessageType() {
   MessageType result = static_cast<MessageType>(buffer_[MESSAGE_TYPE_OFFSET_]);
   return result;
 };
+
 int32_t MessageParser::readSize() {
   int32_t result = 0;
   for (int i = 0; i < 4; i++)
@@ -105,6 +111,14 @@ int32_t MessageParser::readInt32T() {
   int32_t result = 0;
   for (int i = 0; i < 4; i++, next_data_++)
     result += (static_cast<int32_t>(buffer_[next_data_]) << ((3 - i) * 8));
+
+  return result;
+};
+
+off_t MessageParser::readOffT() {
+  off_t result = 0;
+  for (int i = 0; i < 4; i++, next_data_++)
+    result += (static_cast<off_t>(buffer_[next_data_]) << ((3 - i) * 8));
 
   return result;
 };
@@ -294,7 +308,7 @@ extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_respo
   WriteResponse write_response{result, error};
   return write_response;
 };
-/*
+
 //
 extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
   MessageType message_type = MessageType::LSEEK_REQUEST;
@@ -312,20 +326,21 @@ extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
   return byte_request;
 }
 //
-extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request) {
+extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
   int32_t fd = request_parser.readInt32T();
-  std::vector<u_int8_t> buf = request_parser.readBytes();
+  off_t offset = request_parser.readOffT();
+  int32_t whence = request_parser.readInt32T();
 
-  WriteRequest write_request{fd, buf};
-  return write_request;
+  LseekRequest lseek_request{fd, offset, whence};
+  return lseek_request;
 }
 //
-extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response) {
-  MessageType message_type = MessageType::WRITE_RESPONSE;
-  int32_t result = write_response.result;
-  int32_t error = write_response.error;
+extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response) {
+  MessageType message_type = MessageType::LSEEK_RESPONSE;
+  off_t result = lseek_response.result; //?
+  int32_t error = lseek_response.error;
 
   MessageBuilder response_builder;
   response_builder.writeMessageType(message_type);
@@ -337,13 +352,12 @@ extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response
 };
 
 //
-extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response) {
+extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
-  int32_t result = response_parser.readInt32T();
+  off_t result = response_parser.readOffT(); //??
   int32_t error = response_parser.readInt32T();
 
-  WriteResponse write_response{result, error};
-  return write_response;
+  LseekResponse lseek_response{result, error};
+  return lseek_response;
 };
-*/

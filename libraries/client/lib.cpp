@@ -86,22 +86,31 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
 //+
 ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
   
-  const u_int8_t *uintBuff = (u_int8_t*) buf;
-  std::vector<u_int8_t>vectorBuff(uintBuff, uintBuff + count);
+  //std::vector<u_int8_t>vectorBuff(buf, buf + count);
+  auto buff = const_cast<u_int8_t*>(reinterpret_cast<const u_int8_t*>(buf));
+  std::vector<u_int8_t>vectorBuff(buff, buff + count);
   WriteRequest write_request{fd, vectorBuff};
   std::vector<u_int8_t> byte_request = SerializeWriteRequest(write_request); 
  
   sendRequest_(byte_request);
   std::vector<u_int8_t> byte_response = receiveResponse_();
 
-  WriteResponse read_response = DeserializeToWriteResponse(byte_response);
-  error = read_response.error;
-  return read_response.result;
+  WriteResponse write_response = DeserializeToWriteResponse(byte_response);
+  error = write_response.error;
+  return write_response.result;
 
 }
-//
+//+
 off_t NFSClient::lseek(int fd, off_t offset, int whence) {
+  LseekRequest lseek_request{fd, offset, whence};
+  std::vector<u_int8_t> byte_request = SerializeLseekRequest(lseek_request); 
+ 
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
 
+  LseekResponse lseek_response = DeserializeToLseekResponse(byte_response);
+  error = lseek_response.error;
+  return lseek_response.result;
 }
 
 int NFSClient::close(int fd) {

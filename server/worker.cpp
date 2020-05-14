@@ -78,8 +78,27 @@ std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
   return byte_response;
 }
 
+//+
+std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "LSEEK" << std::endl;
 
+  LseekRequest request = DeserializeToLseekRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+  std::cout << "  offset: " << request.offset << std::endl;
+  std::cout << "  whence: " << request.whence << std::endl;
 
+  off_t result =  lseek(request.fd, request.offset, request.whence);
+
+  LseekResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeLseekResponse(response);
+  return byte_response;
+}
 
 std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   MessageParser parser = MessageParser(byte_request);
@@ -88,6 +107,8 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
     return open_handler(byte_request);
   case MessageType::READ_REQUEST:
     return read_handler(byte_request);
+  case MessageType::WRITE_REQUEST:
+    return write_handler(byte_request);
   default:
     return std::vector<u_int8_t>{0, 0, 0, 0, 0};
   }
