@@ -143,7 +143,7 @@ int NFSClient::unlink(const char *pathname) {
   return unlink_response.result;
 }
 
-DIR *NFSClient::opendir(const char *name) {
+int NFSClient::opendir(const char *name) {
   OpendirRequest opendir_request{name};
   std::vector<u_int8_t> byte_request = SerializeOpendirRequest(opendir_request); 
 
@@ -154,9 +154,9 @@ DIR *NFSClient::opendir(const char *name) {
   error = opendir_response.error;
   return opendir_response.result;
 };
-
-dirent *NFSClient::readdir(DIR *dirp) {
-  ReaddirRequest readdir_request{dirp};
+/*
+dirent *NFSClient::readdir(int dirfd) {
+  ReaddirRequest readdir_request{dirfd};
   std::vector<u_int8_t> byte_request = SerializeReaddirRequest(readdir_request); 
  
   sendRequest_(byte_request);
@@ -166,9 +166,9 @@ dirent *NFSClient::readdir(DIR *dirp) {
   error = readdir_response.error;
   return readdir_response.result; 
 };
-
-int NFSClient::closedir(DIR *dirp) {
-  ClosedirRequest closedir_request{dirp};
+*/
+int NFSClient::closedir(int dirfd) {
+  ClosedirRequest closedir_request{dirfd};
   std::vector<u_int8_t> byte_request = SerializeClosedirRequest(closedir_request); 
  
   sendRequest_(byte_request);

@@ -104,12 +104,12 @@ struct OpendirRequest {
 };
 
 struct OpendirResponse {
-  DIR *result;
+  int result;
   int error;
 };
 
 struct ReaddirRequest {
-  DIR *dirp;
+  int dirfd;
 };
 
 struct ReaddirResponse {
@@ -118,7 +118,7 @@ struct ReaddirResponse {
 };
 
 struct ClosedirRequest {
-  DIR *dirp;
+  int dirfd;
 };
 
 struct ClosedirResponse {

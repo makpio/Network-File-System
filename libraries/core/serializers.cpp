@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <string.h>
 #include "./messages.hpp"
 #include "./serializers.hpp"
 
@@ -70,6 +70,14 @@ void MessageBuilder::write(std::string str) {
   data_len_ += str.size();
 };
 
+void MessageBuilder::write(dirent d) { 
+  write(d.d_ino);
+  write(d.d_off);
+  write(d.d_reclen);
+  write(d.d_type);
+  write(d.d_name);
+};
+
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++)
     buffer_[DATA_SIZE_OFFSET_ + i] = (data_len_ >> ((3 - i) * 8));
@@ -99,6 +107,14 @@ int32_t MessageParser::readSize() {
 u_int8_t MessageParser::readUInt8T() {
   u_int8_t result = buffer_[next_data_];
   next_data_ += 1;
+
+  return result;
+};
+
+u_int16_t MessageParser::readUInt16T() {
+  u_int16_t result = 0;
+  for (int i = 0; i < 2; i++, next_data_++)
+    result += (static_cast<int32_t>(buffer_[next_data_]) << ((2 - i) * 8));
 
   return result;
 };
@@ -154,7 +170,30 @@ std::string MessageParser::readString() {
 
   return result;
 };
+/*
+dirent MessageParser::readDirent() { //???????????????????????
+     __ino_t d_ino;
+    __off_t d_off;
+#else
+    __ino64_t d_ino;
+    __off64_t d_off;
+#endif
+    unsigned short int d_reclen;
+    unsigned char d_type;
+    char d_name[256];
+    	
+  ino_t d_no = readUInt64T();
+  off_t d_off = readOffT();
+  u_int16_t d_reclen = readUInt16T();
+  u_int8_t d_type = readUInt8T();
+  std::string d_name_str = readString();
 
+   char d_naame[256];
+  for(int i = 0; i <= 255; ++i) {d_naame[i] = d_name_str[i];}
+
+  dirent result {d_no, d_off, d_reclen, d_type, d_naame};
+  return result;
+}; */
 extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
   MessageType message_type = MessageType::OPEN_REQUEST;
   std::string path = open_request.path;
@@ -475,12 +514,12 @@ extern OpendirRequest DeserializeToOpendirRequest(std::vector<u_int8_t> byte_req
 //
 extern std::vector<u_int8_t> SerializeOpendirResponse(OpendirResponse opendir_response) {
   MessageType message_type = MessageType::OPENDIR_RESPONSE;
-  DIR *result = opendir_response.result;
+  int result = opendir_response.result;
   int32_t error = opendir_response.error;
 
   MessageBuilder response_builder;
   response_builder.writeMessageType(message_type);
-  response_builder.write(result); //write DIR
+  response_builder.write(result);
   response_builder.write(error);
 
   std::vector<u_int8_t> byte_response = response_builder.build();
@@ -490,7 +529,7 @@ extern std::vector<u_int8_t> SerializeOpendirResponse(OpendirResponse opendir_re
 extern OpendirResponse DeserializeToOpendirResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
-  DIR *result = response_parser.readInt32T(); //readDIR
+  int result = response_parser.readInt32T(); 
   int32_t error = response_parser.readInt32T();
 
   OpendirResponse opendir_response{result, error};
@@ -498,25 +537,25 @@ extern OpendirResponse DeserializeToOpendirResponse(std::vector<u_int8_t> byte_r
 };
 
 //~~~~
-//
+/*
 extern std::vector<u_int8_t> SerializeReaddirRequest(ReaddirRequest readdir_request) {
   MessageType message_type = MessageType::READDIR_REQUEST;
-  DIR *dirp = readdir_request.dirp;
+  int dirfd = readdir_request.dirfd;
 
   MessageBuilder request_builder;
   request_builder.writeMessageType(message_type);
-  request_builder.write(dirp); //write DIR
+  request_builder.write(dirfd); 
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
 };
-//
+
 extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
-  DIR *dirp = request_parser.readString(); //readDIR trzeba zrobić
+  int dirfd = request_parser.readUInt32T(); 
 
-  ReaddirRequest readdir_request{dirp};
+  ReaddirRequest readdir_request{dirfd};
   return readdir_request;
 };
 //
@@ -527,7 +566,7 @@ extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_re
 
   MessageBuilder response_builder;
   response_builder.writeMessageType(message_type);
-  response_builder.write(result); //wirte(dirent) trzeba zrobić
+  response_builder.write(result); //wirte(dirent) trzeba zrobić ?????????????
   response_builder.write(error);
 
   std::vector<u_int8_t> byte_response = response_builder.build();
@@ -537,22 +576,21 @@ extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_re
 extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
-  dirent *result = response_parser.readInt32T();
+  dirent *result = response_parser.readDirent(); //readDirent) trzeba zrobić ????????
   int32_t error = response_parser.readInt32T();
 
-  OpendirResponse opendir_response{result, error};
-  return opendir_response;
+  ReaddirResponse readdir_response{result, error};
+  return readdir_response;
 };
-
-//~~???
+*/
 //
 extern std::vector<u_int8_t> SerializeClosedirRequest(ClosedirRequest closedir_request) {
   MessageType message_type = MessageType::CLOSEDIR_REQUEST;
-  DIR *dirp = closedir_request.dirp;
+  int dirfd = closedir_request.dirfd;
 
   MessageBuilder request_builder;
   request_builder.writeMessageType(message_type);
-  request_builder.write(dirp);
+  request_builder.write(dirfd);
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
@@ -561,9 +599,9 @@ extern std::vector<u_int8_t> SerializeClosedirRequest(ClosedirRequest closedir_r
 extern ClosedirRequest DeserializeToClosedirRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
-  DIR *dirp = request_parser.readString(); //readDIR
+  int dirfd = request_parser.readUInt32T();
 
-  ClosedirRequest closedir_request{dirp};
+  ClosedirRequest closedir_request{dirfd};
   return closedir_request;
 };
 //

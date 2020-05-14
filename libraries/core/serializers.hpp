@@ -35,6 +35,7 @@ public:
   void write(std::vector<u_int8_t> bytes);
   void write(std::string str);
   void write(off_t x);
+  void write(dirent d);
 
   std::vector<u_int8_t> build();
 
@@ -51,11 +52,13 @@ public:
   int32_t readSize();
   off_t readOffT();
   u_int8_t readUInt8T();
+  u_int16_t readUInt16T();
   int32_t readInt32T();
   u_int32_t readUInt32T();
   u_int64_t readUInt64T();
   std::vector<u_int8_t> readBytes();
   std::string readString();
+  dirent readDirent();
 
 private:
   std::vector<u_int8_t> buffer_;

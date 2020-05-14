@@ -147,8 +147,8 @@ std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "Request:" << std::endl;
   std::cout << " name: " << request.name << std::endl;
 
-  DIR* result =  opendir(request.name.c_str());
-
+  DIR* dirstream =  opendir(request.name.c_str());
+  int result = dirfd(dirstream);
   OpendirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
   std::cout << "  result: " << response.result << std::endl;
@@ -158,34 +158,16 @@ std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
   std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
   return byte_response;
 };
-
-std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
-  std::cout << "OPENDIR" << std::endl;
-
-  OpendirRequest request = DeserializeToOpendirRequest(byte_request);
-  std::cout << "Request:" << std::endl;
-  std::cout << " name: " << request.name << std::endl;
-
-  DIR* result =  opendir(request.name.c_str());
-
-  OpendirResponse response = {result, errno};
-  std::cout << "Response:" << std::endl;
-  std::cout << "  result: " << response.result << std::endl;
-  std::cout << "  error: " << response.error << std::endl;
-  std::cout << std::endl;
-
-  std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
-  return byte_response;
-};
-
+/*
 std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "READDIR" << std::endl;
 
   ReaddirRequest request = DeserializeToReaddirRequest(byte_request);
   std::cout << "Request:" << std::endl;
-  std::cout << " dirp: " << request.dirp << std::endl;
+  std::cout << " dirfd: " << request.dirfd << std::endl;
 
-  dirent* result =  readdir(request.dirp);
+  DIR *dirp = fdopendir(request.dirfd);
+  dirent* result =  readdir(dirp);
 
   ReaddirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
@@ -196,15 +178,16 @@ std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   std::vector<u_int8_t> byte_response = SerializeReaddirResponse(response);
   return byte_response;
 };
-
+*/
 std::vector<u_int8_t> closedir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "CLOSEDIR" << std::endl;
 
   ClosedirRequest request = DeserializeToClosedirRequest(byte_request);
   std::cout << "Request:" << std::endl;
-  std::cout << " dirp: " << request.dirp << std::endl;
+  std::cout << " dirfd: " << request.dirfd << std::endl;
 
-  int result =  closedir(request.dirp);
+  DIR *dirp = fdopendir(request.dirfd);
+  int result =  closedir(dirp);
 
   ClosedirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
@@ -233,9 +216,9 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   case MessageType::UNLINK_REQUEST:
     return unlink_handler(byte_request); 
   case MessageType::OPENDIR_REQUEST:
-    return opendir_handler(byte_request); 
+    return opendir_handler(byte_request); /*
   case MessageType::READDIR_REQUEST:
-    return readdir_handler(byte_request);
+    return readdir_handler(byte_request); */
   case MessageType::CLOSEDIR_REQUEST:
     return closedir_handler(byte_request);
   default:
