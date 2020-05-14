@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+
 std::string bytes_to_string2(std::vector<u_int8_t> bytes) {
   std::stringstream sstream;
   for (std::vector<u_int8_t>::const_iterator i = bytes.begin(); i != bytes.end(); ++i)
@@ -88,9 +89,13 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
 ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
   
   //std::vector<u_int8_t>vectorBuff(buf, buf + count);
+
   auto buff = const_cast<u_int8_t*>(reinterpret_cast<const u_int8_t*>(buf));
-  std::vector<u_int8_t>vectorBuff(buff, buff + count);
-  WriteRequest write_request{fd, vectorBuff};
+  std::cout << "buff_cotoo: " << buff << std::endl;
+  std::cout << "buff_count: " << count << std::endl;
+  std::vector<u_int8_t>vectorBuff(buff,buff + count);
+  std::cout << "vectorBuf_sizeof: " << sizeof(vectorBuff) << std::endl;
+  WriteRequest write_request{fd,vectorBuff};
   std::vector<u_int8_t> byte_request = SerializeWriteRequest(write_request); 
  
   sendRequest_(byte_request);
@@ -125,8 +130,18 @@ int NFSClient::close(int fd) {
   error = close_response.error;
   return close_response.result;
 };
+//
+int NFSClient::unlink(const char *pathname) {
+  UnlinkRequest unlink_request{pathname};
+  std::vector<u_int8_t> byte_request = SerializeUnlinkRequest(unlink_request); 
 
-int NFSClient::unlink(const char *pathname) {}
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
+
+  UnlinkResponse unlink_response = DeserializeToUnlinkResponse(byte_response);
+  error = unlink_response.error;
+  return unlink_response.result;
+}
 
 int NFSClient::opendir(const char *name) {}
 dirent *NFSClient::readdir(int dirfd) {}

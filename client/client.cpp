@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <fcntl.h>
 
 #include "../libraries/client/lib.hpp"
@@ -35,24 +35,35 @@ int main(){
 
     std::cout << "open_fd: " << fd << std::endl;
     std::cout << "open_error: " << error << std::endl;
-    off_t of = 24;
+
+    off_t of = 32;
     off_t offset = client.lseek(fd, of, SEEK_SET);
     std::cout << "lseek_fd: " << fd << std::endl;
     std::cout << "lseek_offset: " << offset << std::endl;
     std::cout << "lseek_error: " << error << std::endl;
 
 
-    u_int8_t buffer1[2] = {'a', 'a'};
-    int lent = client.write(fd, buffer1, 2);
-    buffer1[lent] = 0;
+    char buffer1[128] = {0};
+    for(int i = 0 ; i < 127; ++i) {buffer1[i] = 'a';}
+
+
+  std::cout << "buffer1_sizeof: " << sizeof(buffer1) << std::endl;
+
+    int lent = client.write(fd, buffer1, strlen(buffer1));
+ 
     std::cout << "write_fd: " << fd << std::endl;
     std::cout << "write_len: " << lent << std::endl;
     std::cout << "write_error: " << error << std::endl;
-    std::cout << "write_buffer: " << buffer1 << std::endl;
+    std::cout << "write_buffer: " << buffer1[0] << std::endl;
 
 
     int fd1 = client.close(fd);
     std::cout << "close_fd: " << fd1 << std::endl;
     std::cout << "close_error: " << error << std::endl;
+
+    const char* path1 = "../xdd";
+    int isZero = client.unlink(path1);
+    std::cout << "unlink_isZero: " << isZero << std::endl;
+    std::cout << "unlink_error: " << error << std::endl;
 
 }

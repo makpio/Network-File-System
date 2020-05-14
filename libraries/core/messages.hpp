@@ -21,7 +21,20 @@ enum struct MessageType : u_int8_t {
   LSEEK_RESPONSE,
 
   CLOSE_REQUEST,
-  CLOSE_RESPONSE
+  CLOSE_RESPONSE,
+
+  UNLINK_REQUEST,
+  UNLINK_RESPONSE,
+
+  OPENDIR_REQUEST,
+  OPENDIR_RESPONSE,
+
+  READDIR_REQUEST,
+  READDIR_RESPONSE,
+
+  CLOSEDIR_REQUEST,
+  CLOSEDIR_RESPONSE
+
 };
 
 
@@ -77,6 +90,41 @@ struct CloseResponse {
   int error;
 };
 
+struct UnlinkRequest {
+  std::string pathname;
+};
+
+struct UnlinkResponse {
+  int result;
+  int error;
+};
+
+struct OpendirRequest {
+
+};
+
+struct OpendirResponse {
+  int result;
+  int error;
+};
+
+struct ReaddirRequest {
+
+};
+
+struct ReaddirResponse {
+  int result;
+  int error;
+};
+
+struct ClosedirRequest {
+
+};
+
+struct ClosedirResponse {
+  int result;
+  int error;
+};
 extern void sendMessage(int fd, std::vector<u_int8_t> request);
 extern std::vector<u_int8_t> receiveMessage(int fd);
 

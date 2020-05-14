@@ -176,8 +176,8 @@ extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
 };
-extern OpenRequest
-DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
+
+extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
   std::string path = request_parser.readString();
@@ -366,7 +366,7 @@ extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_respo
   return lseek_response;
 };
 
-//
+//+
 extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request) {
   MessageType message_type = MessageType::CLOSE_REQUEST;
   int32_t fd = close_request.fd;
@@ -378,7 +378,7 @@ extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request) {
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
 };
-//
+//+
 extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
@@ -387,7 +387,7 @@ extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request
   CloseRequest close_request{fd};
   return close_request;
 };
-//
+//+
 extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response) {
   MessageType message_type = MessageType::CLOSE_RESPONSE;
   int32_t result = close_response.result;
@@ -401,7 +401,7 @@ extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
 };
-//
+//+
 extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -410,4 +410,51 @@ extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_respo
 
   CloseResponse close_response{result, error};
   return close_response;
+};
+
+
+//
+extern std::vector<u_int8_t> SerializeUnlinkRequest(UnlinkRequest unlink_request) {
+  MessageType message_type = MessageType::UNLINK_REQUEST;
+  std::string pathname = unlink_request.pathname;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(pathname);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern UnlinkRequest DeserializeToUnlinkRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  std::string pathname = request_parser.readString();
+
+  UnlinkRequest unlink_request{pathname};
+  return unlink_request;
+};
+//
+extern std::vector<u_int8_t> SerializeUnlinkResponse(UnlinkResponse unlink_response) {
+  MessageType message_type = MessageType::UNLINK_RESPONSE;
+  int32_t result = unlink_response.result;
+  int32_t error = unlink_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern UnlinkResponse DeserializeToUnlinkResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int32_t result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  UnlinkResponse unlink_response{result, error};
+  return unlink_response;
 };

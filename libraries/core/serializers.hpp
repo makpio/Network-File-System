@@ -120,11 +120,39 @@ extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request
 
 extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response);
 extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response);
-//
+//+
 extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request);
 extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request);
 
 extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response);
 extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_response);
+
+//
+extern std::vector<u_int8_t> SerializeUnlinkRequest(UnlinkRequest unlink_request);
+extern UnlinkRequest DeserializeToUnlinkRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeUnlinkResponse(UnlinkResponse unlink_response);
+extern UnlinkResponse DeserializeToUnlinkResponse(std::vector<u_int8_t> byte_response);
+
+//
+extern std::vector<u_int8_t> SerializeOpendirRequest(OpendirRequest opendir_request);
+extern OpendirRequest DeserializeToOpendirRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeOpendirResponse(OpendirResponse opendir_response);
+extern OpendirResponse DeserializeToOpendirResponse(std::vector<u_int8_t> byte_response);
+//
+extern std::vector<u_int8_t> SerializeClosedirRequest(ClosedirRequest closedir_request);
+extern ClosedirRequest DeserializeToClosedirRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeClosedirResponse(ClosedirResponse closedir_response);
+extern ClosedirResponse DeserializeToClosedirResponse(std::vector<u_int8_t> byte_response);
+
+//
+extern std::vector<u_int8_t> SerializeReaddirRequest(ReaddirRequest readdir_request);
+extern ReaddirRequest DeserializeToreaddirRequest(std::vector<u_int8_t> byte_request);
+
+extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response);
+extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response);
+
 
 #endif
