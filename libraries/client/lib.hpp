@@ -21,9 +21,9 @@ public:
   int close(int fd);
   int unlink(const char *pathname);
 
-  int opendir(const char *name);
-  dirent *readdir(int dirfd);
-  int closedir(int dirfd);
+  DIR *opendir(const char *name);
+  dirent *readdir(DIR *dirp);
+  int closedir(DIR *dirp);
 
 private:
   int socket_fd_ = -1;

@@ -149,7 +149,7 @@ extern ClosedirResponse DeserializeToClosedirResponse(std::vector<u_int8_t> byte
 
 //
 extern std::vector<u_int8_t> SerializeReaddirRequest(ReaddirRequest readdir_request);
-extern ReaddirRequest DeserializeToreaddirRequest(std::vector<u_int8_t> byte_request);
+extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_request);
 
 extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response);
 extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response);

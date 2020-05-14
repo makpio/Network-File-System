@@ -143,9 +143,41 @@ int NFSClient::unlink(const char *pathname) {
   return unlink_response.result;
 }
 
-int NFSClient::opendir(const char *name) {}
-dirent *NFSClient::readdir(int dirfd) {}
-int NFSClient::closedir(int dirfd) {}
+DIR *NFSClient::opendir(const char *name) {
+  OpendirRequest opendir_request{name};
+  std::vector<u_int8_t> byte_request = SerializeOpendirRequest(opendir_request); 
+
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
+
+  OpendirResponse opendir_response = DeserializeToOpendirResponse(byte_response);
+  error = opendir_response.error;
+  return opendir_response.result;
+};
+
+dirent *NFSClient::readdir(DIR *dirp) {
+  ReaddirRequest readdir_request{dirp};
+  std::vector<u_int8_t> byte_request = SerializeReaddirRequest(readdir_request); 
+ 
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
+
+  ReaddirResponse readdir_response = DeserializeToReaddirResponse(byte_response);
+  error = readdir_response.error;
+  return readdir_response.result; 
+};
+
+int NFSClient::closedir(DIR *dirp) {
+  ClosedirRequest closedir_request{dirp};
+  std::vector<u_int8_t> byte_request = SerializeClosedirRequest(closedir_request); 
+ 
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
+
+  ClosedirResponse closedir_response = DeserializeToClosedirResponse(byte_response);
+  error = closedir_response.error;
+  return closedir_response.result;
+};
 
 
 void NFSClient::sendRequest_(std::vector<u_int8_t> request) {

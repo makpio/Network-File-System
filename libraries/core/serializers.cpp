@@ -69,13 +69,7 @@ void MessageBuilder::write(std::string str) {
     buffer_.push_back(c);
   data_len_ += str.size();
 };
-/*
-void MessageBuilder::write(off_t fs) {
-  for (int i = 0; i < 4; i++)
-    buffer_.push_back(fs >> ((3 - i) * 8));
-  data_len_ += 4;
-};
-*/
+
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++)
     buffer_[DATA_SIZE_OFFSET_ + i] = (data_len_ >> ((3 - i) * 8));
@@ -412,8 +406,7 @@ extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_respo
   return close_response;
 };
 
-
-//
+//+
 extern std::vector<u_int8_t> SerializeUnlinkRequest(UnlinkRequest unlink_request) {
   MessageType message_type = MessageType::UNLINK_REQUEST;
   std::string pathname = unlink_request.pathname;
@@ -425,7 +418,7 @@ extern std::vector<u_int8_t> SerializeUnlinkRequest(UnlinkRequest unlink_request
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
 };
-//
+//+
 extern UnlinkRequest DeserializeToUnlinkRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
@@ -434,7 +427,7 @@ extern UnlinkRequest DeserializeToUnlinkRequest(std::vector<u_int8_t> byte_reque
   UnlinkRequest unlink_request{pathname};
   return unlink_request;
 };
-//
+//+
 extern std::vector<u_int8_t> SerializeUnlinkResponse(UnlinkResponse unlink_response) {
   MessageType message_type = MessageType::UNLINK_RESPONSE;
   int32_t result = unlink_response.result;
@@ -448,7 +441,7 @@ extern std::vector<u_int8_t> SerializeUnlinkResponse(UnlinkResponse unlink_respo
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
 };
-//
+//+
 extern UnlinkResponse DeserializeToUnlinkResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -457,4 +450,143 @@ extern UnlinkResponse DeserializeToUnlinkResponse(std::vector<u_int8_t> byte_res
 
   UnlinkResponse unlink_response{result, error};
   return unlink_response;
+};
+//
+extern std::vector<u_int8_t> SerializeOpendirRequest(OpendirRequest opendir_request) {
+  MessageType message_type = MessageType::OPENDIR_REQUEST;
+  std::string name = opendir_request.name;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(name);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern OpendirRequest DeserializeToOpendirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  std::string name = request_parser.readString();
+
+  OpendirRequest opendir_request{name};
+  return opendir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeOpendirResponse(OpendirResponse opendir_response) {
+  MessageType message_type = MessageType::OPENDIR_RESPONSE;
+  DIR *result = opendir_response.result;
+  int32_t error = opendir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result); //write DIR
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern OpendirResponse DeserializeToOpendirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  DIR *result = response_parser.readInt32T(); //readDIR
+  int32_t error = response_parser.readInt32T();
+
+  OpendirResponse opendir_response{result, error};
+  return opendir_response;
+};
+
+//~~~~
+//
+extern std::vector<u_int8_t> SerializeReaddirRequest(ReaddirRequest readdir_request) {
+  MessageType message_type = MessageType::READDIR_REQUEST;
+  DIR *dirp = readdir_request.dirp;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(dirp); //write DIR
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  DIR *dirp = request_parser.readString(); //readDIR trzeba zrobić
+
+  ReaddirRequest readdir_request{dirp};
+  return readdir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response) {
+  MessageType message_type = MessageType::READDIR_RESPONSE;
+  dirent *result = readdir_response.result;
+  int32_t error = readdir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result); //wirte(dirent) trzeba zrobić
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  dirent *result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  OpendirResponse opendir_response{result, error};
+  return opendir_response;
+};
+
+//~~???
+//
+extern std::vector<u_int8_t> SerializeClosedirRequest(ClosedirRequest closedir_request) {
+  MessageType message_type = MessageType::CLOSEDIR_REQUEST;
+  DIR *dirp = closedir_request.dirp;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(dirp);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern ClosedirRequest DeserializeToClosedirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  DIR *dirp = request_parser.readString(); //readDIR
+
+  ClosedirRequest closedir_request{dirp};
+  return closedir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeClosedirResponse(ClosedirResponse closedir_response) {
+  MessageType message_type = MessageType::CLOSEDIR_RESPONSE;
+  int result = closedir_response.result;
+  int32_t error = closedir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern ClosedirResponse DeserializeToClosedirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  ClosedirResponse closedir_response{result, error};
+  return closedir_response;
 };

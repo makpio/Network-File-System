@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <vector>
 #include <string>
-
+#include <dirent.h>
 
 enum struct MessageType : u_int8_t {
   OPEN_REQUEST,
@@ -100,25 +100,25 @@ struct UnlinkResponse {
 };
 
 struct OpendirRequest {
-
+  std::string name;
 };
 
 struct OpendirResponse {
-  int result;
+  DIR *result;
   int error;
 };
 
 struct ReaddirRequest {
-
+  DIR *dirp;
 };
 
 struct ReaddirResponse {
-  int result;
+  dirent *result;
   int error;
 };
 
 struct ClosedirRequest {
-
+  DIR *dirp;
 };
 
 struct ClosedirResponse {
