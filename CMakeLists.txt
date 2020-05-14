@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(NFS)
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
@@ -21,6 +21,7 @@ target_link_libraries(server PUBLIC libcore)
 
 file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp" "client/*.h" "client/command_handlers/*.h" "client/command_handlers/*.cpp")
 add_executable(client ${SOURCES_CLIENT})
+target_link_libraries(client PUBLIC stdc++fs)
 target_link_libraries(libclient PUBLIC libcore)
 target_link_libraries(client PUBLIC libclient)
 
