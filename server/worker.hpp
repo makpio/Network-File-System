@@ -1,7 +1,8 @@
-#ifndef WORKER_CPP
-#define WORKER_CPP
+#ifndef WORKER_HPP
+#define WORKER_HPP
 #include <vector>
 #include <thread>
+#include <unordered_map>
 
 #include <sys/types.h>
 
@@ -13,17 +14,12 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request);
 
 class Worker {
 public:
-    Worker(int socket_fd){
-        this->socket_fd = socket_fd;
-    }
-    void run(){
-
-    }
-    std::thread spawn() {
-      return std::thread( [this] { this->run(); } );
-    }
+  Worker(int socket_fd);
+  //~Worker();
+  void run();
+  std::thread spawn();
 private:
-    int socket_fd;
+  int socket_fd;
 };
 
 #endif
