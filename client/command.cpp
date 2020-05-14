@@ -30,6 +30,8 @@ Command get_command(){
         c.type = Command::Exit;
     }else if(command_type.find(std::string("put")) != std::string::npos){
         c.type = Command::Put;
+    }else if(command_type.find(std::string("ls")) != std::string::npos){
+        c.type = Command::Get_dir;
     }else if(command_type == ""){
         c.type = Command::Empty;
     }else{

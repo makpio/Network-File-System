@@ -35,6 +35,10 @@ int run_loop(Connector* connector, bool& exit){
                 put_handler(command, &r, connector);
                 break;
             }
+            case Command::Get_dir:{
+                get_dir_handler(command, connector);
+                break;
+            }
             case Command::Exit:{
                 std::cout<<'\n';
                 disp_prompt();

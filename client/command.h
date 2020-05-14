@@ -13,6 +13,7 @@ struct C{
     static const int Put = 2;
     static const int Help = 3;
     static const int Exit = 4;
+    static const int Get_dir = 5;
 
 }typedef Command;
 

@@ -1,6 +1,12 @@
 #include "connector.h"
 #include <iostream>
 
+#include <experimental/filesystem>
+
+/**
+ * LocalFSConnector
+ * 
+ */
 
 int LocalFSConnector::connect(std::string host, uint port, std::string user, std::string passwd){
     return 1;
@@ -50,4 +56,44 @@ LocalFSConnector::~LocalFSConnector(){
     for (auto iter = open_files.rbegin(); iter != open_files.rend(); ++iter) {
         close(iter->first);
     }
+}
+
+bool LocalFSConnector::ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
+    if(std::experimental::filesystem::exists(path)){
+        for (const auto & entry : std::experimental::filesystem::directory_iterator(path))
+            dirs.push_back(entry.path()); 
+        
+        return true;
+    }else{
+        return false;
+    }
+}
+
+/**
+ * Real connector
+ * 
+ */
+
+NFSConnector::NFSConnector(){
+    client = new NFSClient();
+}
+
+int NFSConnector::connect(std::string host, uint port, std::string user, std::string passwd){
+    return client->connect4((char*)host.c_str(), port, (char*)user.c_str(), (char*)passwd.c_str());
+}
+
+FileDescriptor NFSConnector::open(std::string path, int oflag, int mode){
+    return client->open((char*)path.c_str(), oflag, mode);
+}
+
+ssize_t NFSConnector::read(FileDescriptor fd, char *buf, size_t count){
+    return client->read(fd, buf, count);
+}
+
+ssize_t NFSConnector::write(FileDescriptor fd, const char* buf, size_t count){
+    return client->write(fd, buf, count);
+}
+
+int NFSConnector::close(FileDescriptor fd){
+    return client->close(fd);
 }
