@@ -22,7 +22,7 @@ void disp_prompt(){
 }
 
 void display_error_message(){
-    std::cout<<"sory mordzia; twoja komenda nie smiga :/ \n";
+    std::cout<<"Invalid command :/ \n";
 };
 void display_help_prompt(){
     std::cout<<"Type 'help' for help :) "<<std::endl;
