@@ -87,14 +87,10 @@ ssize_t NFSClient::read(int fd, void *buf, size_t count) {
 };
 //+
 ssize_t NFSClient::write(int fd, const void *buf, size_t count) {
-  
-  //std::vector<u_int8_t>vectorBuff(buf, buf + count);
 
-  auto buff = const_cast<u_int8_t*>(reinterpret_cast<const u_int8_t*>(buf));
-  std::cout << "buff_cotoo: " << buff << std::endl;
-  std::cout << "buff_count: " << count << std::endl;
-  std::vector<u_int8_t>vectorBuff(buff,buff + count);
-  std::cout << "vectorBuf_sizeof: " << sizeof(vectorBuff) << std::endl;
+  const u_int8_t *charBuf = (u_int8_t *)buf;
+  std::vector<u_int8_t>vectorBuff(charBuf,charBuf + count);
+  std::cout << "vectorBuf_size(): " << vectorBuff.size() << std::endl;
   WriteRequest write_request{fd,vectorBuff};
   std::vector<u_int8_t> byte_request = SerializeWriteRequest(write_request); 
  

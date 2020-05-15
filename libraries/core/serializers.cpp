@@ -317,7 +317,6 @@ extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request
   MessageType message_type = request_parser.readMessageType();
   int32_t fd = request_parser.readInt32T();
   std::vector<u_int8_t> buf = request_parser.readBytes();
-
   WriteRequest write_request{fd, buf};
   return write_request;
 };

@@ -62,12 +62,8 @@ std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
   WriteRequest request = DeserializeToWriteRequest(byte_request);
   std::cout << "Request:" << std::endl;
   std::cout << "  fd: " << request.fd << std::endl;
-  //std::cout << "  buf: " << request.buf << std::endl;
-
-  //std::vector<u_int8_t> buf = std::vector<u_int8_t>(request.count);
-  size_t nbytes = (size_t) sizeof(std::vector<u_int8_t>) + (sizeof(u_int8_t) * request.buf.size());
-
-  int result = write(request.fd, request.buf.data(), nbytes);
+  std::cout << "  buf_size: " << request.buf.size() << std::endl;
+  int result = write(request.fd, request.buf.data(), request.buf.size());
 
   WriteResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
