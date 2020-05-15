@@ -5,12 +5,9 @@
 #include <unordered_map>
 
 #include <sys/types.h>
+#include "DescriptorsMapper.h"
 
-std::vector<u_int8_t> open_handler(std::vector<u_int8_t> byte_request);
 
-std::vector<u_int8_t> read_handler(std::vector<u_int8_t> byte_request);
-
-std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request);
 
 class Worker {
 public:
@@ -20,6 +17,8 @@ public:
   std::thread spawn();
 private:
   int socket_fd;
+  DescriptorsMapper mapper;
+
 };
 
 #endif

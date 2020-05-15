@@ -9,6 +9,7 @@
 #include "worker.hpp"
 #include "../libraries/core/messages.hpp"
 #include "../libraries/core/serializers.hpp"
+#include "handler.h"
 
 const u_int PORT = 9000;
 const u_int HOW_MANY_CONNECTION = 5;
