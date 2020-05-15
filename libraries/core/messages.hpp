@@ -21,7 +21,10 @@ enum struct MessageType : u_int8_t {
   LSEEK_RESPONSE,
 
   CLOSE_REQUEST,
-  CLOSE_RESPONSE
+  CLOSE_RESPONSE,
+
+  AUTHENTICATE_REQUEST,
+  AUTHENTICATE_RESPONSE
 };
 
 
@@ -75,6 +78,16 @@ struct CloseRequest {
 struct CloseResponse {
   int result;
   int error;
+};
+
+struct AuthenticateRequest{
+    std::string username;
+    std::string password;
+};
+
+struct AuthenticateResponse{
+    int result; // 0 - authenticated
+    int error;
 };
 
 extern void sendMessage(int fd, std::vector<u_int8_t> request);

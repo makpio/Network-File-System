@@ -6,14 +6,14 @@
 
 class DescriptorsMapper {
 public:
-    int operator[](int key);
-    void addDescritor(int key, int value);
+    int operator[](int fd);
+    int addDescriptor(int fd);
+    void removeDescriptor(int fd);
 
 private:
+    // first -> descriptor on server, second -> descriptor on client
     std::unordered_map<int, int> mapper;
 
-    int getLowestDescriptor();
-
-
+    int getLowestFreeDescriptor();
 };
 #endif //NFS_DESCRIPTORSMAPPER_H

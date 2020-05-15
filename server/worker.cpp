@@ -22,14 +22,16 @@ Worker::Worker(int socket_fd){
 // }
 void Worker::run(){
   std::cout << "I am working!" << std::endl;
+
   std::vector<u_int8_t> byte_request;
   std::vector<u_int8_t> byte_response;
+
   std::cout << "Thread id: " << std::this_thread::get_id() << std::endl;
-  while (true) {
-    byte_request = receiveMessage(socket_fd);
-    byte_response = make_response(byte_request);
-    sendMessage(socket_fd, byte_response);
-  }
+
+  byte_request = receiveMessage(socket_fd);
+  byte_response = make_response(byte_request);
+  sendMessage(socket_fd, byte_response);
+
   std::cout<<"Stop working" << std::endl;
 }
 std::thread Worker::spawn() {

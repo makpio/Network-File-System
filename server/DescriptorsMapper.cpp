@@ -1,19 +1,24 @@
 #include "DescriptorsMapper.h"
 
-int DescriptorsMapper::operator[](int key) {
-    if(mapper.find(key) != mapper.end())
-        return mapper[key];
+int DescriptorsMapper::operator[](int fd) {
+    if(mapper.find(fd) != mapper.end())
+        return mapper[fd];
     else
         throw std::out_of_range("Descriptor does not exists");
 }
-
-void DescriptorsMapper::addDescritor(int key, int value) {
-    if(mapper.find(key) != mapper.end())
+int DescriptorsMapper::addDescriptor(int fd) {
+    if(mapper.find(fd) != mapper.end())
         throw std::invalid_argument("Descriptor already exists");
     else
-        mapper[key] = value;
+        mapper[fd] = getLowestFreeDescriptor();
+    return mapper[fd];
 }
-
-int DescriptorsMapper::getLowestDescriptor() {
-    return 0;
+void DescriptorsMapper::removeDescriptor(int fd) {
+    if(mapper.find(fd) != mapper.end())
+        mapper.erase(fd);
+    else
+        throw std::out_of_range("Descriptor does not exists");
+}
+int DescriptorsMapper::getLowestFreeDescriptor() {
+    for()
 }

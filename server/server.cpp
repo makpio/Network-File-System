@@ -53,7 +53,8 @@ int main() {
     if (socket_fd == -1) 
       perror("accept");
     else{
-      work(socket_fd);
+      Worker worker(socket_fd);
+      worker.run();
     }
     close(socket_fd);
     //fds.push_back(socket_fd);
@@ -68,14 +69,3 @@ int main() {
   //   close(i);
 }
 
-void work(int socket_fd){
-  std::cout << "I am working!" << std::endl;
-  std::vector<u_int8_t> byte_request;
-  std::vector<u_int8_t> byte_response;
-  std::cout << "Thread id: " << std::this_thread::get_id() << std::endl;
-  //while (true) {
-    byte_request = receiveMessage(socket_fd);
-    byte_response = make_response(byte_request);
-    sendMessage(socket_fd, byte_response);
-  //}
-}

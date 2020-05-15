@@ -227,7 +227,7 @@ extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
 
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
-};
+}
 extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -237,4 +237,17 @@ extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_respons
 
   ReadResponse read_response{result, buf, error};
   return read_response;
-};
+}
+extern std::vector<u_int8_t> SerializeAuthenticateRequest(AuthenticateRequest authenticate_request){
+
+}
+extern AuthenticateRequest DeserializeAuthenticateRequest(std::vector<u_int8_t> byte_request){
+
+}
+extern std::vector<u_int8_t> SerializeAuthenticateResponse(AuthenticateResponse authenticate_response){
+
+}
+extern AuthenticateResponse DeserializeAuthenticateResponse(std::vector<u_int8_t> byte_response){
+
+}
+
