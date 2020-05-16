@@ -17,22 +17,20 @@
 Worker::Worker(int socket_fd){
   this->socket_fd = socket_fd;
 }
-// Worker::~Worker(){
-//   close(socket_fd);
-// }
 void Worker::run(){
-  std::cout << "I am working!" << std::endl;
-
   std::vector<u_int8_t> byte_request;
   std::vector<u_int8_t> byte_response;
-
-  std::cout << "Thread id: " << std::this_thread::get_id() << std::endl;
-
-  byte_request = receiveMessage(socket_fd);
-  byte_response = make_response(byte_request);
-  sendMessage(socket_fd, byte_response);
-
-  std::cout<<"Stop working" << std::endl;
+  while(true){
+      try{
+          byte_request = receiveMessage(socket_fd);
+          byte_response = handler.make_response(byte_request);
+          sendMessage(socket_fd, byte_response);
+      }
+      catch (std::ios_base::failure&) {
+          std::cout << "Ending connection with client" << std::endl;
+          break;
+      }
+  }
 }
 std::thread Worker::spawn() {
   return std::thread( [this] { this->run(); } );

@@ -6,18 +6,17 @@
 
 #include <sys/types.h>
 #include "DescriptorsMapper.h"
-
+#include "handler.h"
 
 
 class Worker {
 public:
   Worker(int socket_fd);
-  //~Worker();
   void run();
   std::thread spawn();
 private:
   int socket_fd;
-  DescriptorsMapper mapper;
+  Handler handler;
 
 };
 

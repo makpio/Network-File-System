@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <algorithm>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -44,28 +45,20 @@ int main() {
   listen(server_fd, 5);
   std::cout << "Server_fd: " << server_fd << std::endl;
 
-  // auto workers = std::vector<std::thread>();
+  auto workers = std::vector<std::thread>();
   auto fds = std::vector<int>();
-  //fds.push_back(server_fd);
 
   while (true) {
     int socket_fd = accept(server_fd, (struct sockaddr *)0, (unsigned int *)0);
     if (socket_fd == -1) 
       perror("accept");
     else{
-      Worker worker(socket_fd);
-      worker.run();
+      fds.push_back(socket_fd);
+      workers.push_back(Worker(socket_fd).spawn());
     }
-    close(socket_fd);
-    //fds.push_back(socket_fd);
-    // std::cout << "Thread_fd: " << socket_fd << std::endl; 
-    // workers.push_back(Worker(socket_fd).spawn());
   }
-
-  std::cout<<"Stop working" << std::endl;
-  // for(auto& worker : workers)
-  //   worker.join();
-  // for(int i : fds)
-  //   close(i);
+  std::for_each(workers.begin(), workers.end(), [] (std::thread& worker) { worker.join(); });
+  std::for_each(fds.begin(), fds.end(), close);
 }
+
 
