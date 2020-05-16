@@ -2,7 +2,7 @@
 #define NFS_DESCRIPTORSMAPPER_H
 
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 class DescriptorsMapper {
 public:
@@ -12,7 +12,7 @@ public:
 
 private:
     // first -> descriptor on server, second -> descriptor on client
-    std::unordered_map<int, int> mapper;
+    std::map<int, int> mapper;
 
     int getLowestFreeDescriptor();
 };

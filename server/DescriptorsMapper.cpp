@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "DescriptorsMapper.h"
 
 int DescriptorsMapper::operator[](int fd) {
@@ -20,5 +21,14 @@ void DescriptorsMapper::removeDescriptor(int fd) {
         throw std::out_of_range("Descriptor does not exists");
 }
 int DescriptorsMapper::getLowestFreeDescriptor() {
-    for()
+    std::vector<int> descriptors(mapper.size());
+    std::transform(mapper.begin() ,mapper.end(), std::back_inserter(descriptors),
+            [] (const std::map<int, int>::value_type &pair) {
+                return pair.second;
+            }
+    );
+    int i = 1;
+    while(std::find(descriptors.begin(), descriptors.end(), i) != descriptors.end())
+        ++i;
+    return i;
 }
