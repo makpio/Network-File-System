@@ -23,8 +23,7 @@ extern std::vector<u_int8_t> receiveMessage(int fd) {
   while (how_many_read != how_many_need_to_read) {
     int last_read = read(fd, buffer, how_many_need_to_read - how_many_read);
     if (last_read <= 0) {
-      perror("reading stream message");
-      exit(4);
+      throw std::ios_base::failure("End connection with client");
     }
     how_many_read += last_read;
     result.insert(result.end(), buffer, buffer + last_read);
@@ -38,12 +37,11 @@ extern std::vector<u_int8_t> receiveMessage(int fd) {
         read(fd, buffer,
              std::min(buffer_size, how_many_need_to_read - how_many_read));
     if (last_read <= 0) {
-      perror("reading stream message");
-      exit(4);
+        throw std::ios_base::failure("End connection with client");
     }
     how_many_read += last_read;
     result.insert(result.end(), buffer, buffer + last_read);
   }
 
   return result;
-};
+}

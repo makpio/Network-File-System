@@ -72,7 +72,7 @@ int NFSClient::open(char *path, int oflag, int mode) {
   return open_response.result;
 }
 ssize_t NFSClient::read(int fd, void *buf, size_t count) {
-  ReadRequest read_request{fd, count};
+  ReadRequest read_request{fd, static_cast<ssize_t>(count)};
   std::vector<u_int8_t> byte_request = SerializeReadRequest(read_request);
 
   sendRequest_(byte_request);
