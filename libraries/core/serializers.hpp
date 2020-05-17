@@ -156,6 +156,26 @@ extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_req
 
 extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response);
 extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response);
+/* byte_read_request data schema:
+
+- name: username
+  type: string
+- name: password
+  type: string
+*/
+extern std::vector<u_int8_t> SerializeAuthenticateRequest(AuthenticateRequest authenticate_request);
+extern AuthenticateRequest DeserializeAuthenticateRequest(std::vector<u_int8_t> byte_request);
+
+/* byte_read_response data schema:
+
+  - name: result
+    type: int32_t
+  - name: error
+    type: int32_t
+*/
+extern std::vector<u_int8_t> SerializeAuthenticateResponse(AuthenticateResponse authenticate_response);
+extern AuthenticateResponse DeserializeAuthenticateResponse(std::vector<u_int8_t> byte_response);
+
 
 
 #endif

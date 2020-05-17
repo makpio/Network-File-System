@@ -33,8 +33,10 @@ enum struct MessageType : u_int8_t {
   READDIR_RESPONSE,
 
   CLOSEDIR_REQUEST,
-  CLOSEDIR_RESPONSE
+  CLOSEDIR_RESPONSE,
 
+  AUTHENTICATE_REQUEST,
+  AUTHENTICATE_RESPONSE
 };
 
 
@@ -125,6 +127,16 @@ struct ClosedirResponse {
   int result;
   int error;
 };
+struct AuthenticateRequest{
+    std::string username;
+    std::string password;
+};
+
+struct AuthenticateResponse{
+    int result; // 0 - authenticated, 1 - wrong password, 2 -username doesnt exist
+    int error;
+};
+
 extern void sendMessage(int fd, std::vector<u_int8_t> request);
 extern std::vector<u_int8_t> receiveMessage(int fd);
 

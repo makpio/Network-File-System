@@ -37,6 +37,7 @@ extern int test_libclient(int x) { return test_libcore(x) * 321; };
 extern int error = -1;
 
 NFSClient::NFSClient(){};
+
 int NFSClient::connect4(char *host, int port, char *user, char *password) {
   struct sockaddr_in server;
   struct hostent *hp;
@@ -59,7 +60,24 @@ int NFSClient::connect4(char *host, int port, char *user, char *password) {
     perror("connecting stream socket");
     exit(1);
   }
+  return authenticate(user, password);
 };
+
+int NFSClient::authenticate(char *user, char *password) {
+    AuthenticateRequest authenticate_request{user, password};
+    std::vector<u_int8_t> byte_request = SerializeAuthenticateRequest(authenticate_request);
+
+    sendRequest_(byte_request);
+    std::vector<u_int8_t> byte_response = receiveResponse_();
+
+    AuthenticateResponse authenticate_response = DeserializeAuthenticateResponse(byte_response);
+    if (authenticate_response.result == 0)
+        return authenticate_response.result;
+    else if (authenticate_response.result == 1)
+        throw std::domain_error("wrong password");
+    else
+        throw std::domain_error("user does not exist");
+}
 
 int NFSClient::open(char *path, int oflag, int mode) {
   OpenRequest open_request{path, oflag, mode};
@@ -74,7 +92,7 @@ int NFSClient::open(char *path, int oflag, int mode) {
 };
 
 ssize_t NFSClient::read(int fd, void *buf, size_t count) {
-  ReadRequest read_request{fd, count};
+  ReadRequest read_request{fd, static_cast<ssize_t>(count)};
   std::vector<u_int8_t> byte_request = SerializeReadRequest(read_request);
 
   sendRequest_(byte_request);

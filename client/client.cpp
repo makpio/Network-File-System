@@ -13,6 +13,7 @@ char *PASSWORD = "password";
 
 int main(){
 //connect  
+
     NFSClient client;
     std::cout << "try to connect" << std::endl;
     client.connect4(HOST, PORT, USER, PASSWORD);
@@ -32,7 +33,7 @@ int main(){
     std::cout << "read_buffer: " << buffer << std::endl;
 */
 //open
-    char *path = "../xdd1.md";
+    char *path = "../testfiles/testfile1.txt";
     int fd = client.open(path, O_RDWR, 0);
 
     std::cout << "open_fd: " << fd << std::endl;
@@ -65,7 +66,7 @@ int main(){
     std::cout << "unlink_error: " << error << std::endl;
 */
 //opendir
-    const char* name = "../xdd";
+    const char* name = "../testfiles";
     int dirfd = client.opendir(name);
     std::cout << "opendir_fd: " << dirfd << std::endl;
     std::cout << "opendir_error: " << error << std::endl;

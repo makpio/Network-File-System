@@ -286,6 +286,7 @@ extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
   return byte_response;
 };
 
+
 extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -627,3 +628,51 @@ extern ClosedirResponse DeserializeToClosedirResponse(std::vector<u_int8_t> byte
   ClosedirResponse closedir_response{result, error};
   return closedir_response;
 };
+
+extern std::vector<u_int8_t> SerializeAuthenticateRequest(AuthenticateRequest authenticate_request){
+    MessageType message_type = MessageType::AUTHENTICATE_REQUEST;
+    std::string username = authenticate_request.username;
+    std::string password = authenticate_request.password;
+
+    MessageBuilder request_builder;
+    request_builder.writeMessageType(message_type);
+    request_builder.write(username);
+    request_builder.write(password);
+
+    std::vector<u_int8_t> byte_request = request_builder.build();
+    return byte_request;
+
+}
+extern AuthenticateRequest DeserializeAuthenticateRequest(std::vector<u_int8_t> byte_request){
+    MessageParser request_parser(byte_request);
+    MessageType message_type = request_parser.readMessageType();
+    std::string username = request_parser.readString();
+    std::string password = request_parser.readString();
+
+    AuthenticateRequest authenticate_request{username, password};
+    return authenticate_request;
+}
+extern std::vector<u_int8_t> SerializeAuthenticateResponse(AuthenticateResponse authenticate_response){
+    MessageType message_type = MessageType::AUTHENTICATE_RESPONSE;
+    int32_t result = authenticate_response.result;
+    int32_t error = authenticate_response.error;
+
+    MessageBuilder request_builder;
+    request_builder.writeMessageType(message_type);
+    request_builder.write(result);
+    request_builder.write(error);
+
+    std::vector<u_int8_t> byte_request = request_builder.build();
+    return byte_request;
+}
+extern AuthenticateResponse DeserializeAuthenticateResponse(std::vector<u_int8_t> byte_response){
+    MessageParser request_parser(byte_response);
+    MessageType message_type = request_parser.readMessageType();
+    int32_t result = request_parser.readInt32T();
+    int32_t error = request_parser.readInt32T();
+
+
+    AuthenticateResponse authenticate_response{result, error};
+    return authenticate_response;
+}
+

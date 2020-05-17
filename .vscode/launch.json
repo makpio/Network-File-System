@@ -8,9 +8,8 @@
             "name": "g++ - Build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/client",
-            "args": [   
-                "--user", "me", "--address", "123.123.123.123"
+            "program": "${workspaceFolder}/build/server",
+            "args": [  
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",
