@@ -18,20 +18,24 @@ int main(){
     std::cout << "try to connect" << std::endl;
     client.connect4(HOST, PORT, USER, PASSWORD);
     std::cout << "connected" << std::endl;
-/*
-//read
-    char *path = "../xdd1";
-    int fd = client.open(path, O_RDONLY, 0);
-    std::cout << "open_fd: " << fd << std::endl;
-    std::cout << "open_error: " << error << std::endl;
 
-    char buffer[1024];
-    int len = client.read(fd, buffer, 1023);
-    buffer[len] = 0;
-    std::cout << "read_len: " << len << std::endl;
-    std::cout << "read_error: " << error << std::endl;
-    std::cout << "read_buffer: " << buffer << std::endl;
-*/
+//read
+//    char *path = "../testfiles/testfile1.txt";
+//    int fd = client.open(path, O_RDONLY, 0);
+//    std::cout << "open_fd: " << fd << std::endl;
+//    std::cout << "open_error: " << error << std::endl;
+//
+//    char buffer[1024];
+//    int len = client.read(fd, buffer, 1023);
+//    buffer[len] = 0;
+//    std::cout << "read_len: " << len << std::endl;
+//    std::cout << "read_error: " << error << std::endl;
+//    std::cout << "read_buffer: " << buffer << std::endl;
+//
+//    int closeResult = client.close(fd);
+//    std::cout << "close: " << closeResult << std::endl;
+
+
 //open
     char *path = "/home/mateusz/file.txt";
     int fd = client.open(path, O_RDWR, 0);
@@ -46,14 +50,15 @@ int main(){
     std::cout << "lseek_error: " << error << std::endl;
 */
 //write
-    char buffer1[127] = {0};
-    for(int i = 0 ; i < 17; ++i) {buffer1[i] = 'a';}
-    int lent = client.write(fd, buffer1, strlen(buffer1));
- 
+//    char buffer1[127] = {0};
+//    for(int i = 0 ; i < 17; ++i) {buffer1[i] = 'a';}
+    std::string message = "aaaaaaaa";
+    int lent = client.write(fd, message.c_str(), message.length());
+
     std::cout << "write_fd: " << fd << std::endl;
     std::cout << "write_len: " << lent << std::endl;
     std::cout << "write_error: " << error << std::endl;
-    std::cout << "write_buffer: " << buffer1[0] << std::endl;
+    std::cout << "write_buffer: " << message << std::endl;
 
 //close
     int fd1 = client.close(fd);

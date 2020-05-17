@@ -63,7 +63,8 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
 
     OpenResponse response = {fileFd, errno};
     std::cout << "Response:" << std::endl;
-    std::cout << "  fd: " << response.result << std::endl;
+    std::cout << "  client_fd: " << response.result << std::endl;
+    std::cout << "  server_fd: " << result << std::endl;
     std::cout << "  error: " << response.error << std::endl;
     std::cout << std::endl;
 
@@ -108,7 +109,7 @@ std::vector<u_int8_t> Handler::write_handler(std::vector<u_int8_t> byte_request)
     int result;
     try {
         int server_fd = mapper[request.fd];
-        result = write(request.fd, request.buf.data(), request.buf.size());
+        result = write(server_fd, request.buf.data(), request.buf.size());
     }
     catch (std::out_of_range&) {
         result = -1;
@@ -163,7 +164,8 @@ std::vector<u_int8_t> Handler::close_handler(std::vector<u_int8_t> byte_request)
     int result;
     try {
         int server_fd = mapper[request.fd];
-        result =  close(server_fd);
+        result = close(server_fd);
+        mapper.removeDescriptor(request.fd);
     }
     catch (std::out_of_range&) {
         result = -1;
