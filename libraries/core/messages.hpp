@@ -43,13 +43,13 @@ struct ReadRequest {
 
 struct ReadResponse {
   int result;
-  std::vector<char> buf;
+  std::vector<u_int8_t> buf;
   int error;
 };
 
 struct WriteRequest {
   int fd;
-  std::vector<char> buf;
+  std::vector<u_int8_t> buf;
 };
 
 struct WriteResponse {
@@ -76,5 +76,8 @@ struct CloseResponse {
   int result;
   int error;
 };
+
+extern void sendMessage(int fd, std::vector<u_int8_t> request);
+extern std::vector<u_int8_t> receiveMessage(int fd);
 
 #endif

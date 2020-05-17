@@ -7,5 +7,4 @@
 2. cd to build folder
 3. run 'cmake ..'
 4. run 'make -j4'
-5. congrats, you have successfuly built a library
-6. go to test and build tests
+5. congrats, you have successfuly built a library, apps and tests
