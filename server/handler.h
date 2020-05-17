@@ -14,6 +14,8 @@ public:
 private:
     DescriptorsMapper mapper;
     const static std::string shadowFilePath;
+
+    int authenticate(std::string username, std::size_t passwordHash);
 };
 
 
