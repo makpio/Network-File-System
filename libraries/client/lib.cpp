@@ -58,6 +58,23 @@ int NFSClient::connect4(char *host, int port, char *user, char *password) {
     perror("connecting stream socket");
     exit(1);
   }
+  AuthenticateRequest authenticate_request{user, password};
+  std::vector<u_int8_t> byte_request = SerializeAuthenticateRequest(authenticate_request);
+
+  sendRequest_(byte_request);
+  std::vector<u_int8_t> byte_response = receiveResponse_();
+
+  AuthenticateResponse authenticate_response = DeserializeAuthenticateResponse(byte_response);
+  if (authenticate_response.result == 0)
+    return authenticate_response.result;
+  else if (authenticate_response.result == 1) {
+      perror("wrong password");
+      exit(5);
+  }
+  else {
+      perror("user doesnt exists");
+      exit(6);
+  }
 };
 
 int NFSClient::open(char *path, int oflag, int mode) {
