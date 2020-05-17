@@ -13,5 +13,6 @@ void display_help_prompt();
 void display_help();
 
 std::string convertToString(char* a, int size);
+void show_not_implemented_info();
 
 #endif
