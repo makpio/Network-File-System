@@ -22,6 +22,7 @@ public:
     virtual ssize_t write(FileDescriptor fd, const char* buf, size_t count)=0;
     virtual bool ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs)=0;
     virtual int close(FileDescriptor fd)=0;
+    virtual off_t lseek(int fd, off_t offset, int whence)=0;
 };
 
 
@@ -32,9 +33,8 @@ public:
     ssize_t read(FileDescriptor fd, char *buf, size_t count);
     ssize_t write(FileDescriptor fd, const char* buf, size_t count);
     int close(FileDescriptor fd);
-
     bool ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs);
-
+    off_t lseek(int fd, off_t offset, int whence);
     ~LocalFSConnector();
 private:
     std::map<FileDescriptor, std::fstream*> open_files{}; 
@@ -53,6 +53,8 @@ public:
     bool ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
         std::cout<<"sorki, to jeszcze nie zostało zaimplementowane\n";
     }
+    off_t lseek(int fd, off_t offset, int whence);
+
 private:
     NFSClient* client=nullptr;
 };

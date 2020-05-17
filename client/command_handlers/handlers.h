@@ -12,6 +12,8 @@ bool get_handler(Command c, Saver *saver, Connector *);
 
 bool put_handler(Command c, Reader *reader, Connector *);
 
-bool get_dir_handler(Command c, Connector* );
+bool get_dir_handler(Command c, Connector *);
+
+bool record_handler(Command c, Connector *);
 
 #endif

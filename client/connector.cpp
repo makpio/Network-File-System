@@ -69,6 +69,15 @@ bool LocalFSConnector::ls(std::string path, unsigned int options, std::vector<Fi
     }
 }
 
+off_t LocalFSConnector::lseek(int fd, off_t offset, int whence){
+    if(open_files.find(fd) != open_files.end()){
+        std::fstream* s = open_files[fd];
+        s->seekg(offset, (std::ios_base::seekdir) whence);
+        return s->tellg();
+    }
+    return 0;
+}
+
 /**
  * Real connector
  * 
@@ -96,4 +105,8 @@ ssize_t NFSConnector::write(FileDescriptor fd, const char* buf, size_t count){
 
 int NFSConnector::close(FileDescriptor fd){
     return client->close(fd);
+}
+
+off_t NFSConnector::lseek(int fd, off_t offset, int whence){
+    return client->lseek(fd, offset, whence);
 }

@@ -38,7 +38,7 @@ Command get_command(){
     }else if(command_type.find(std::string("ls")) != std::string::npos){
         c.type = Command::Get_dir;
     }else if(command_type.find(std::string("record")) != std::string::npos){
-        c.type = Command::Not_implemented;
+        c.type = Command::Record;
     }else if(command_type == ""){
         c.type = Command::Empty;
     }else{

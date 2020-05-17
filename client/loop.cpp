@@ -46,6 +46,10 @@ int run_loop(Connector* connector, bool& exit){
                 _run = false;
                 break;
             }
+            case Command::Record:{
+                record_handler(command, connector);
+                break;
+            }
             case Command::Not_implemented:{
                 show_not_implemented_info();
                 break;

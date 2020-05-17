@@ -15,7 +15,7 @@ struct C{
     static const int Help = 3;
     static const int Exit = 4;
     static const int Get_dir = 5;
-    
+    static const int Record = 6;
 
 }typedef Command;
 
