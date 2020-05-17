@@ -31,6 +31,12 @@ void display_help_prompt(){
 void display_help(){
     std::cout<<"No na razie nic nie śmiaga w sumie\n\n";
     std::cout<<"help - wyswietla to menu\n";
+    std::cout<<"get <remote file name> <local file name> - pobiera plik z serwera i zapisuje go lokalnie \n";
+    std::cout<<"put <local file> <remote file> - zapisuje lokalny plik na serwerze\n";
+    std::cout<<"record <remote file> <record size> <record number> (jeszcze nie ma)\n";
+    std::cout<<"ls <path> - wyświetla pliki w podanym folderze\n";
+    std::cout<<"exit - wyjscie z programu\n";
+
 }
 
 std::string convertToString(char* a, int size) { 
@@ -41,4 +47,8 @@ std::string convertToString(char* a, int size) {
     } 
     return s; 
 } 
+
+void show_not_implemented_info(){
+    std::cout<<"We are sorry but your command has not yet been implemented or is incorrect\n";
+}
   

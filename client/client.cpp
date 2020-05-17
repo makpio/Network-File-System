@@ -8,6 +8,7 @@
 #include "loop.h"
 #include "connector.h"
 #include "include/cxxopts.hpp"
+#include "linenoise_setup.h"
 
 // char *HOST = "localhost";
 // int PORT = 9000;
@@ -59,6 +60,8 @@ int main(int argc, char* argv[]){
 
     display_welcome_message();
 
+
+    custom_linenoise_setup();
     run_loop(connector, uNFS_EXIT);
 
     delete connector;

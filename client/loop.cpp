@@ -8,7 +8,7 @@
 int run_loop(Connector* connector, bool& exit){
     bool _run = true;
     while(_run && (!exit)){
-        disp_prompt();
+        
         Command command = get_command();
 
 
@@ -44,6 +44,14 @@ int run_loop(Connector* connector, bool& exit){
                 disp_prompt();
                 std::cout<<"exit\n";
                 _run = false;
+                break;
+            }
+            case Command::Not_implemented:{
+                show_not_implemented_info();
+                break;
+            }
+            default:{
+                show_not_implemented_info();
                 break;
             }
         }

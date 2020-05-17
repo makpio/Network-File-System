@@ -7,6 +7,7 @@ struct C{
     std::string command_string;
 
     int type = -1;
+    static const int Not_implemented = -2;
     static const int Invalid_command = -1;
     static const int Empty = 0;
     static const int Get = 1;
@@ -14,6 +15,7 @@ struct C{
     static const int Help = 3;
     static const int Exit = 4;
     static const int Get_dir = 5;
+    
 
 }typedef Command;
 

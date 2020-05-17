@@ -2,17 +2,22 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "include/linenoise/linenoise/linenoise.h"
+
+
+
 
 Command get_command(){
-    std::string s;
-    std::getline(std::cin, s);
-    if (std::cin.eof()==1) {
-        std::cin.clear();
-        std::cin.ignore();
+    
+    char *line;
+    line = linenoise(">>> ");
+    if(line == nullptr){
         Command c;
         c.type = Command::Exit;
         return c;    
     }
+    linenoiseHistoryAdd(line);
+    std::string s(line);
 
     std::string command_type;
 
@@ -32,6 +37,8 @@ Command get_command(){
         c.type = Command::Put;
     }else if(command_type.find(std::string("ls")) != std::string::npos){
         c.type = Command::Get_dir;
+    }else if(command_type.find(std::string("record")) != std::string::npos){
+        c.type = Command::Not_implemented;
     }else if(command_type == ""){
         c.type = Command::Empty;
     }else{
