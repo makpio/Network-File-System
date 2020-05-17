@@ -11,7 +11,6 @@
 #include "worker.hpp"
 #include "handler.h"
 
-
 Worker::Worker(int socket_fd) {
   this->socket_fd = socket_fd;
 }

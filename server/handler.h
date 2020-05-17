@@ -12,10 +12,10 @@ public:
     std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request);
 
 private:
+    int authenticate(std::string username, std::size_t passwordHash);
+
     DescriptorsMapper mapper;
     const static std::string shadowFilePath;
-
-    int authenticate(std::string username, std::size_t passwordHash);
 };
 
 

@@ -14,12 +14,12 @@ public:
   Worker(int socket_fd);
   void run();
   std::thread spawn();
-private:
-  int socket_fd;
-  Handler handler;
 
+private:
   bool authenticateUser();
 
+  int socket_fd;
+  Handler handler;
 };
 
 #endif
