@@ -1,5 +1,3 @@
-
-
 #include <fcntl.h>
 #include <iostream>
 #include <sys/stat.h>
@@ -14,10 +12,13 @@
 #include "handler.h"
 
 
-Worker::Worker(int socket_fd){
+Worker::Worker(int socket_fd) {
   this->socket_fd = socket_fd;
 }
-void Worker::run(){
+void Worker::run() {
+    if(!authenticateUser())
+        return;
+
   std::vector<u_int8_t> byte_request;
   std::vector<u_int8_t> byte_response;
   while(true){
@@ -34,5 +35,19 @@ void Worker::run(){
 }
 std::thread Worker::spawn() {
   return std::thread( [this] { this->run(); } );
+}
+
+bool Worker::authenticateUser() {
+    std::vector<u_int8_t> byte_request = receiveMessage(socket_fd);
+
+    MessageParser parser = MessageParser(byte_request);
+    if(parser.readMessageType() != MessageType::AUTHENTICATE_REQUEST)
+        return false;
+
+    AuthenticateResponse authenticateResponse = handler.authenticate_handler(byte_request);
+    bool isAuthenticated = authenticateResponse.result == 0;
+
+    sendMessage(socket_fd, SerializeAuthenticateResponse(authenticateResponse));
+    return isAuthenticated;
 }
 

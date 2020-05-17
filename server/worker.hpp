@@ -18,6 +18,8 @@ private:
   int socket_fd;
   Handler handler;
 
+  bool authenticateUser();
+
 };
 
 #endif
