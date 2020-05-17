@@ -33,7 +33,7 @@ int main(){
     std::cout << "read_buffer: " << buffer << std::endl;
 */
 //open
-    char *path = "../testfiles/testfile1.txt";
+    char *path = "/home/mateusz/file.txt";
     int fd = client.open(path, O_RDWR, 0);
 
     std::cout << "open_fd: " << fd << std::endl;
@@ -66,12 +66,12 @@ int main(){
     std::cout << "unlink_error: " << error << std::endl;
 */
 //opendir
-    const char* name = "../testfiles";
-    int dirfd = client.opendir(name);
-    std::cout << "opendir_fd: " << dirfd << std::endl;
-    std::cout << "opendir_error: " << error << std::endl;
+//    const char* name = "../testfiles";
+//    int dirfd = client.opendir(name);
+//    std::cout << "opendir_fd: " << dirfd << std::endl;
+//    std::cout << "opendir_error: " << error << std::endl;
 //closedir
-    int dirfd1 = client.closedir(dirfd);
-    std::cout << "closedir_fd: " << dirfd1 << std::endl;
-    std::cout << "closedir_error: " << error << std::endl;
+//    int dirfd1 = client.closedir(dirfd);
+//    std::cout << "closedir_fd: " << dirfd1 << std::endl;
+//    std::cout << "closedir_error: " << error << std::endl;
 }

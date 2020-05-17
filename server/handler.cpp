@@ -105,8 +105,15 @@ std::vector<u_int8_t> Handler::write_handler(std::vector<u_int8_t> byte_request)
     std::cout << "Request:" << std::endl;
     std::cout << "  fd: " << request.fd << std::endl;
     std::cout << "  buf_size: " << request.buf.size() << std::endl;
-    int result = write(request.fd, request.buf.data(), request.buf.size());
-
+    int result;
+    try {
+        int server_fd = mapper[request.fd];
+        result = write(request.fd, request.buf.data(), request.buf.size());
+    }
+    catch (std::out_of_range&) {
+        result = -1;
+        errno = 1;
+    }
     WriteResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;
@@ -127,8 +134,15 @@ std::vector<u_int8_t> Handler::lseek_handler(std::vector<u_int8_t> byte_request)
     std::cout << "  offset: " << request.offset << std::endl;
     std::cout << "  whence: " << request.whence << std::endl;
 
-    off_t result =  lseek(request.fd, request.offset, request.whence);
-
+    off_t result;
+    try {
+        int server_fd = mapper[request.fd];
+        result = lseek(server_fd, request.offset, request.whence);
+    }
+    catch (std::out_of_range&) {
+        result = -1;
+        errno = 1;
+    }
     LseekResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;
@@ -146,8 +160,15 @@ std::vector<u_int8_t> Handler::close_handler(std::vector<u_int8_t> byte_request)
     std::cout << "Request:" << std::endl;
     std::cout << "  fd: " << request.fd << std::endl;
 
-    int result =  close(request.fd);
-
+    int result;
+    try {
+        int server_fd = mapper[request.fd];
+        result =  close(server_fd);
+    }
+    catch (std::out_of_range&) {
+        result = -1;
+        errno = 1;
+    }
     CloseResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;
@@ -165,7 +186,7 @@ std::vector<u_int8_t> Handler::unlink_handler(std::vector<u_int8_t> byte_request
     std::cout << "Request:" << std::endl;
     std::cout << " pathname: " << request.pathname << std::endl;
 
-    int result =  unlink(request.pathname.c_str());
+    int result = unlink(request.pathname.c_str());
 
     UnlinkResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
