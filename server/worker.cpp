@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #include "../libraries/core/messages.hpp"
 #include "../libraries/core/serializers.hpp"
@@ -54,6 +55,147 @@ std::vector<u_int8_t> read_handler(std::vector<u_int8_t> byte_request) {
   return byte_response;
 }
 
+//+
+std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "WRITE" << std::endl;
+
+  WriteRequest request = DeserializeToWriteRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+  std::cout << "  buf_size: " << request.buf.size() << std::endl;
+  int result = write(request.fd, request.buf.data(), request.buf.size());
+
+  WriteResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeWriteResponse(response);
+  return byte_response;
+};
+
+//+
+std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "LSEEK" << std::endl;
+
+  LseekRequest request = DeserializeToLseekRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+  std::cout << "  offset: " << request.offset << std::endl;
+  std::cout << "  whence: " << request.whence << std::endl;
+
+  off_t result =  lseek(request.fd, request.offset, request.whence);
+
+  LseekResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeLseekResponse(response);
+  return byte_response;
+};
+//+
+std::vector<u_int8_t> close_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "CLOSE" << std::endl;
+
+  CloseRequest request = DeserializeToCloseRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << "  fd: " << request.fd << std::endl;
+
+  int result =  close(request.fd);
+
+  CloseResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeCloseResponse(response);
+  return byte_response;
+};
+//+
+std::vector<u_int8_t> unlink_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "UNLINK" << std::endl;
+
+  UnlinkRequest request = DeserializeToUnlinkRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << " pathname: " << request.pathname << std::endl;
+
+  int result =  unlink(request.pathname.c_str());
+
+  UnlinkResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeUnlinkResponse(response);
+  return byte_response;
+};
+//
+
+std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "OPENDIR" << std::endl;
+
+  OpendirRequest request = DeserializeToOpendirRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << " name: " << request.name << std::endl;
+
+  DIR* dirstream =  opendir(request.name.c_str());
+  int result = dirfd(dirstream);
+  OpendirResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
+  return byte_response;
+};
+/*
+std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "READDIR" << std::endl;
+
+  ReaddirRequest request = DeserializeToReaddirRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << " dirfd: " << request.dirfd << std::endl;
+
+  DIR *dirp = fdopendir(request.dirfd);
+  dirent* result =  readdir(dirp);
+
+  ReaddirResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeReaddirResponse(response);
+  return byte_response;
+};
+*/
+std::vector<u_int8_t> closedir_handler(std::vector<u_int8_t> byte_request) {
+  std::cout << "CLOSEDIR" << std::endl;
+
+  ClosedirRequest request = DeserializeToClosedirRequest(byte_request);
+  std::cout << "Request:" << std::endl;
+  std::cout << " dirfd: " << request.dirfd << std::endl;
+
+  DIR *dirp = fdopendir(request.dirfd);
+  int result =  closedir(dirp);
+
+  ClosedirResponse response = {result, errno};
+  std::cout << "Response:" << std::endl;
+  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  error: " << response.error << std::endl;
+  std::cout << std::endl;
+
+  std::vector<u_int8_t> byte_response = SerializeClosedirResponse(response);
+  return byte_response;
+};
+
+
 std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   MessageParser parser = MessageParser(byte_request);
   switch (parser.readMessageType()) {
@@ -61,6 +203,20 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
     return open_handler(byte_request);
   case MessageType::READ_REQUEST:
     return read_handler(byte_request);
+  case MessageType::WRITE_REQUEST:
+    return write_handler(byte_request);
+  case MessageType::LSEEK_REQUEST:
+    return lseek_handler(byte_request);
+  case MessageType::CLOSE_REQUEST:
+    return close_handler(byte_request);
+  case MessageType::UNLINK_REQUEST:
+    return unlink_handler(byte_request); 
+  case MessageType::OPENDIR_REQUEST:
+    return opendir_handler(byte_request); /*
+  case MessageType::READDIR_REQUEST:
+    return readdir_handler(byte_request); */
+  case MessageType::CLOSEDIR_REQUEST:
+    return closedir_handler(byte_request);
   default:
     return std::vector<u_int8_t>{0, 0, 0, 0, 0};
   }
