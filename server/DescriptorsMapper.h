@@ -11,9 +11,8 @@ public:
     void removeDescriptor(int fd);
 
 private:
-    // first -> descriptor on server, second -> descriptor on client
+    // first -> descriptor on client, second -> descriptor on server
     std::map<int, int> mapper;
-
     int getLowestFreeDescriptor();
 };
 #endif //NFS_DESCRIPTORSMAPPER_H
