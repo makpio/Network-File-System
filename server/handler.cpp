@@ -6,6 +6,11 @@
 #include "handler.h"
 #include "../libraries/core/serializers.hpp"
 
+const std::string Handler::shadowFilePath = "./shadowFile.txt";
+
+AuthenticateResponse Handler::authenticate_handler(std::vector<u_int8_t> byte_request){
+
+}
 
 std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) {
     std::cout << "OPEN" << std::endl;
@@ -36,11 +41,17 @@ std::vector<u_int8_t> Handler::read_handler(std::vector<u_int8_t> byte_request) 
     std::cout << "Request:" << std::endl;
     std::cout << "  fd: " << request.fd << std::endl;
     std::cout << "  count: " << request.count << std::endl;
-
+    int result;
     std::vector<u_int8_t> buf = std::vector<u_int8_t>(request.count);
-    int result = read(request.fd, buf.data(), request.count);
-    buf.resize(result);
-
+    try {
+        int server_fd = mapper[request.fd];
+        result = read(server_fd, buf.data(), request.count);
+        buf.resize(result);
+    }
+    catch (std::out_of_range&) {
+        result = -1;
+        errno = 1;
+    }
     ReadResponse response = {result, buf, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;
@@ -51,10 +62,6 @@ std::vector<u_int8_t> Handler::read_handler(std::vector<u_int8_t> byte_request) 
     return byte_response;
 }
 
-std::vector<u_int8_t> Handler::authenticate_handler(std::vector<u_int8_t> byte_request){
-
-}
-
 std::vector<u_int8_t> Handler::make_response(std::vector<u_int8_t> byte_request) {
     MessageParser parser = MessageParser(byte_request);
     switch (parser.readMessageType()) {
@@ -62,8 +69,6 @@ std::vector<u_int8_t> Handler::make_response(std::vector<u_int8_t> byte_request)
             return open_handler(byte_request);
         case MessageType::READ_REQUEST:
             return read_handler(byte_request);
-        case MessageType::AUTHENTICATE_REQUEST:
-            return authenticate_handler(byte_request);
         default:
             return std::vector<u_int8_t>{0, 0, 0, 0, 0};
     }
