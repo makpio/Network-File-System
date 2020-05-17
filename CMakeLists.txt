@@ -19,7 +19,8 @@ file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
 add_executable(server ${SOURCES_SERVER})
 target_link_libraries(server PUBLIC libcore)
 
-file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp" "client/*.h" "client/command_handlers/*.h" "client/command_handlers/*.cpp")
+file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp" "client/*.h" "client/command_handlers/*.h" "client/command_handlers/*.cpp" "client/include/linenoise/linenoise/*.h" "client/include/linenoise/linenoise/linenoise.c")
+
 add_executable(client ${SOURCES_CLIENT})
 target_link_libraries(client PUBLIC stdc++fs)
 target_link_libraries(libclient PUBLIC libcore)
