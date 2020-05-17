@@ -86,7 +86,7 @@ struct AuthenticateRequest{
 };
 
 struct AuthenticateResponse{
-    int result; // 0 - authenticated
+    int result; // 0 - authenticated, 1 - wrong password, 2 -username doesnt exist
     int error;
 };
 
