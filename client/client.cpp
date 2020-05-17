@@ -3,17 +3,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../libraries/client/lib.hpp"
+#include "include/lib.hpp"
 #include "utils.h"
 #include "loop.h"
 #include "connector.h"
 #include "include/cxxopts.hpp"
 #include "linenoise_setup.h"
 
-// char *HOST = "localhost";
-// int PORT = 9000;
-// char *USER = "user";
-// char *PASSWORD = "password";
 
 
 #include <signal.h>
@@ -64,7 +60,9 @@ int main(int argc, char* argv[]){
     custom_linenoise_setup();
     run_loop(connector, uNFS_EXIT);
 
+
     delete connector;
+    linenoiseHistorySave(".uNSFcommandhistory.txt");
     // NFSClient client;
     // std::cout << "try to connect" << std::endl;
     // client.connect4(HOST, PORT, USER, PASSWORD);
