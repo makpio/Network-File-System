@@ -2,6 +2,7 @@
 #define SAVER_H
 #include <string>
 #include <iostream>
+#include <fstream>
 
 class Saver{
     public:
@@ -18,6 +19,18 @@ class Mock_saver: public Saver{
     void close();
     private:
     std::string name_;
+};
+
+class FSSaver: public Saver{
+public:
+    FSSaver();
+    bool save(char* buffer, uint len);
+    bool open(std::string name);
+    void close();
+
+    ~FSSaver();
+private:
+    std::fstream* s;
 };
 
 #endif

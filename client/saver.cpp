@@ -23,3 +23,37 @@ bool Mock_saver::open(std::string file_name){
 void Mock_saver::close(){
     name_ = std::string("");
 }
+
+
+/**
+ * tera real FS saver
+ */
+
+FSSaver::FSSaver(){
+    s = new std::fstream;
+}
+
+bool FSSaver::save(char* buffer, uint len){
+    if(!s->good()){
+        return false;
+    }
+    s->write(buffer, len);
+    return true;
+}
+
+bool FSSaver::open(std::string file_name){
+    if(s != nullptr){
+        return false;
+    }
+    s->open(file_name, std::ios::in);
+    return s->good();
+}
+
+void FSSaver::close(){
+    s->close();
+    delete s;
+}
+
+FSSaver::~FSSaver(){
+    close();
+}
