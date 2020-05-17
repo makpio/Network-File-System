@@ -1,15 +1,21 @@
 #include <iostream>
+#include <thread>
+#include <vector>
+#include <algorithm>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "worker.h"
-
+#include "worker.hpp"
+#include "../libraries/core/messages.hpp"
+#include "../libraries/core/serializers.hpp"
+#include "handler.h"
 
 const u_int PORT = 9000;
 const u_int HOW_MANY_CONNECTION = 5;
 
+void work(int);
 
 int main() {
   int server_fd;
@@ -37,13 +43,22 @@ int main() {
   }
   printf("Socket port #%d\n", ntohs(server_addr.sin_port));
   listen(server_fd, 5);
+  std::cout << "Server_fd: " << server_fd << std::endl;
+
+  auto workers = std::vector<std::thread>();
+  auto fds = std::vector<int>();
 
   while (true) {
     int socket_fd = accept(server_fd, (struct sockaddr *)0, (unsigned int *)0);
-    if (socket_fd == -1) {
+    if (socket_fd == -1) 
       perror("accept");
-      exit(3);
+    else{
+      fds.push_back(socket_fd);
+      workers.push_back(Worker(socket_fd).spawn());
     }
-    worker(socket_fd);
   }
+  std::for_each(workers.begin(), workers.end(), [] (std::thread& worker) { worker.join(); });
+  std::for_each(fds.begin(), fds.end(), close);
 }
+
+

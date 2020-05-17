@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <string.h>
 #include "./messages.hpp"
 #include "./serializers.hpp"
 
@@ -20,6 +20,13 @@ void MessageBuilder::write(u_int8_t x) {
   buffer_.push_back(x);
   data_len_ += 1;
 };
+
+void MessageBuilder::write(off_t x) {
+  for (int i = 0; i < 4; i++)
+    buffer_.push_back(x >> ((3 - i) * 8));
+  data_len_ += 4;
+};
+
 
 void MessageBuilder::write(int32_t x) {
   for (int i = 0; i < 4; i++)
@@ -63,6 +70,14 @@ void MessageBuilder::write(std::string str) {
   data_len_ += str.size();
 };
 
+void MessageBuilder::write(dirent d) { 
+  write(d.d_ino);
+  write(d.d_off);
+  write(d.d_reclen);
+  write(d.d_type);
+  write(d.d_name);
+};
+
 std::vector<u_int8_t> MessageBuilder::build() {
   for (int i = 0; i < 4; i++)
     buffer_[DATA_SIZE_OFFSET_ + i] = (data_len_ >> ((3 - i) * 8));
@@ -79,6 +94,7 @@ MessageType MessageParser::readMessageType() {
   MessageType result = static_cast<MessageType>(buffer_[MESSAGE_TYPE_OFFSET_]);
   return result;
 };
+
 int32_t MessageParser::readSize() {
   int32_t result = 0;
   for (int i = 0; i < 4; i++)
@@ -95,10 +111,26 @@ u_int8_t MessageParser::readUInt8T() {
   return result;
 };
 
+u_int16_t MessageParser::readUInt16T() {
+  u_int16_t result = 0;
+  for (int i = 0; i < 2; i++, next_data_++)
+    result += (static_cast<int32_t>(buffer_[next_data_]) << ((2 - i) * 8));
+
+  return result;
+};
+
 int32_t MessageParser::readInt32T() {
   int32_t result = 0;
   for (int i = 0; i < 4; i++, next_data_++)
     result += (static_cast<int32_t>(buffer_[next_data_]) << ((3 - i) * 8));
+
+  return result;
+};
+
+off_t MessageParser::readOffT() {
+  off_t result = 0;
+  for (int i = 0; i < 4; i++, next_data_++)
+    result += (static_cast<off_t>(buffer_[next_data_]) << ((3 - i) * 8));
 
   return result;
 };
@@ -138,7 +170,30 @@ std::string MessageParser::readString() {
 
   return result;
 };
+/*
+dirent MessageParser::readDirent() { //???????????????????????
+     __ino_t d_ino;
+    __off_t d_off;
+#else
+    __ino64_t d_ino;
+    __off64_t d_off;
+#endif
+    unsigned short int d_reclen;
+    unsigned char d_type;
+    char d_name[256];
+    	
+  ino_t d_no = readUInt64T();
+  off_t d_off = readOffT();
+  u_int16_t d_reclen = readUInt16T();
+  u_int8_t d_type = readUInt8T();
+  std::string d_name_str = readString();
 
+   char d_naame[256];
+  for(int i = 0; i <= 255; ++i) {d_naame[i] = d_name_str[i];}
+
+  dirent result {d_no, d_off, d_reclen, d_type, d_naame};
+  return result;
+}; */
 extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
   MessageType message_type = MessageType::OPEN_REQUEST;
   std::string path = open_request.path;
@@ -153,9 +208,9 @@ extern std::vector<u_int8_t> SerializeOpenRequest(OpenRequest open_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
-extern OpenRequest
-DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
+};
+
+extern OpenRequest DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
   std::string path = request_parser.readString();
@@ -164,7 +219,7 @@ DeserializeToOpenRequest(std::vector<u_int8_t> byte_request) {
 
   OpenRequest open_request{path, oflag, mode};
   return open_request;
-}
+};
 
 extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
   MessageType message_type = MessageType::OPEN_RESPONSE;
@@ -178,7 +233,8 @@ extern std::vector<u_int8_t> SerializeOpenResponse(OpenResponse open_response) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
+
 extern OpenResponse
 DeserializeToOpenResponse(std::vector<u_int8_t> byte_response) {
   MessageParser request_parser(byte_response);
@@ -188,7 +244,7 @@ DeserializeToOpenResponse(std::vector<u_int8_t> byte_response) {
 
   OpenResponse open_response{result, error};
   return open_response;
-}
+};
 
 extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request) {
   MessageType message_type = MessageType::READ_REQUEST;
@@ -202,7 +258,8 @@ extern std::vector<u_int8_t> SerializeReadRequest(ReadRequest read_request) {
 
   std::vector<u_int8_t> byte_request = request_builder.build();
   return byte_request;
-}
+};
+
 extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request) {
   MessageParser request_parser(byte_request);
   MessageType message_type = request_parser.readMessageType();
@@ -211,7 +268,7 @@ extern ReadRequest DeserializeToReadRequest(std::vector<u_int8_t> byte_request) 
 
   ReadRequest read_request{fd, count};
   return read_request;
-}
+};
 
 extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
   MessageType message_type = MessageType::READ_RESPONSE;
@@ -228,6 +285,8 @@ extern std::vector<u_int8_t> SerializeReadResponse(ReadResponse read_response) {
   std::vector<u_int8_t> byte_response = response_builder.build();
   return byte_response;
 };
+
+
 extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
@@ -238,3 +297,382 @@ extern ReadResponse DeserializeToReadResponse(std::vector<u_int8_t> byte_respons
   ReadResponse read_response{result, buf, error};
   return read_response;
 };
+
+//+
+extern std::vector<u_int8_t> SerializeWriteRequest(WriteRequest write_request) {
+  MessageType message_type = MessageType::WRITE_REQUEST;
+  int32_t fd = write_request.fd;
+  std::vector<u_int8_t> buf = write_request.buf;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(fd);
+  request_builder.write(buf);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//+
+extern WriteRequest DeserializeToWriteRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int32_t fd = request_parser.readInt32T();
+  std::vector<u_int8_t> buf = request_parser.readBytes();
+  WriteRequest write_request{fd, buf};
+  return write_request;
+};
+//+
+extern std::vector<u_int8_t> SerializeWriteResponse(WriteResponse write_response) {
+  MessageType message_type = MessageType::WRITE_RESPONSE;
+  int32_t result = write_response.result;
+  int32_t error = write_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+
+//+
+extern WriteResponse DeserializeToWriteResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int32_t result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  WriteResponse write_response{result, error};
+  return write_response;
+};
+
+//+
+extern std::vector<u_int8_t> SerializeLseekRequest(LseekRequest lseek_request) {
+  MessageType message_type = MessageType::LSEEK_REQUEST;
+  int32_t fd = lseek_request.fd;
+  off_t offset = lseek_request.offset;
+  int32_t whence = lseek_request.whence;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(fd);
+  request_builder.write(offset);
+  request_builder.write(whence);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//+
+extern LseekRequest DeserializeToLseekRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int32_t fd = request_parser.readInt32T();
+  off_t offset = request_parser.readOffT();
+  int32_t whence = request_parser.readInt32T();
+
+  LseekRequest lseek_request{fd, offset, whence};
+  return lseek_request;
+};
+//+
+extern std::vector<u_int8_t> SerializeLseekResponse(LseekResponse lseek_response) {
+  MessageType message_type = MessageType::LSEEK_RESPONSE;
+  off_t result = lseek_response.result; //?
+  int32_t error = lseek_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//+
+extern LseekResponse DeserializeToLseekResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  off_t result = response_parser.readOffT(); //??
+  int32_t error = response_parser.readInt32T();
+
+  LseekResponse lseek_response{result, error};
+  return lseek_response;
+};
+
+//+
+extern std::vector<u_int8_t> SerializeCloseRequest(CloseRequest close_request) {
+  MessageType message_type = MessageType::CLOSE_REQUEST;
+  int32_t fd = close_request.fd;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(fd);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//+
+extern CloseRequest DeserializeToCloseRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int32_t fd = request_parser.readInt32T();
+
+  CloseRequest close_request{fd};
+  return close_request;
+};
+//+
+extern std::vector<u_int8_t> SerializeCloseResponse(CloseResponse close_response) {
+  MessageType message_type = MessageType::CLOSE_RESPONSE;
+  int32_t result = close_response.result;
+  int32_t error = close_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//+
+extern CloseResponse DeserializeToCloseResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int32_t result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  CloseResponse close_response{result, error};
+  return close_response;
+};
+
+//+
+extern std::vector<u_int8_t> SerializeUnlinkRequest(UnlinkRequest unlink_request) {
+  MessageType message_type = MessageType::UNLINK_REQUEST;
+  std::string pathname = unlink_request.pathname;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(pathname);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//+
+extern UnlinkRequest DeserializeToUnlinkRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  std::string pathname = request_parser.readString();
+
+  UnlinkRequest unlink_request{pathname};
+  return unlink_request;
+};
+//+
+extern std::vector<u_int8_t> SerializeUnlinkResponse(UnlinkResponse unlink_response) {
+  MessageType message_type = MessageType::UNLINK_RESPONSE;
+  int32_t result = unlink_response.result;
+  int32_t error = unlink_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//+
+extern UnlinkResponse DeserializeToUnlinkResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int32_t result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  UnlinkResponse unlink_response{result, error};
+  return unlink_response;
+};
+//
+extern std::vector<u_int8_t> SerializeOpendirRequest(OpendirRequest opendir_request) {
+  MessageType message_type = MessageType::OPENDIR_REQUEST;
+  std::string name = opendir_request.name;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(name);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern OpendirRequest DeserializeToOpendirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  std::string name = request_parser.readString();
+
+  OpendirRequest opendir_request{name};
+  return opendir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeOpendirResponse(OpendirResponse opendir_response) {
+  MessageType message_type = MessageType::OPENDIR_RESPONSE;
+  int result = opendir_response.result;
+  int32_t error = opendir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern OpendirResponse DeserializeToOpendirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int result = response_parser.readInt32T(); 
+  int32_t error = response_parser.readInt32T();
+
+  OpendirResponse opendir_response{result, error};
+  return opendir_response;
+};
+
+//~~~~
+/*
+extern std::vector<u_int8_t> SerializeReaddirRequest(ReaddirRequest readdir_request) {
+  MessageType message_type = MessageType::READDIR_REQUEST;
+  int dirfd = readdir_request.dirfd;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(dirfd); 
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+
+extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int dirfd = request_parser.readUInt32T(); 
+
+  ReaddirRequest readdir_request{dirfd};
+  return readdir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response) {
+  MessageType message_type = MessageType::READDIR_RESPONSE;
+  dirent *result = readdir_response.result;
+  int32_t error = readdir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result); //wirte(dirent) trzeba zrobić ?????????????
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  dirent *result = response_parser.readDirent(); //readDirent) trzeba zrobić ????????
+  int32_t error = response_parser.readInt32T();
+
+  ReaddirResponse readdir_response{result, error};
+  return readdir_response;
+};
+*/
+//
+extern std::vector<u_int8_t> SerializeClosedirRequest(ClosedirRequest closedir_request) {
+  MessageType message_type = MessageType::CLOSEDIR_REQUEST;
+  int dirfd = closedir_request.dirfd;
+
+  MessageBuilder request_builder;
+  request_builder.writeMessageType(message_type);
+  request_builder.write(dirfd);
+
+  std::vector<u_int8_t> byte_request = request_builder.build();
+  return byte_request;
+};
+//
+extern ClosedirRequest DeserializeToClosedirRequest(std::vector<u_int8_t> byte_request) {
+  MessageParser request_parser(byte_request);
+  MessageType message_type = request_parser.readMessageType();
+  int dirfd = request_parser.readUInt32T();
+
+  ClosedirRequest closedir_request{dirfd};
+  return closedir_request;
+};
+//
+extern std::vector<u_int8_t> SerializeClosedirResponse(ClosedirResponse closedir_response) {
+  MessageType message_type = MessageType::CLOSEDIR_RESPONSE;
+  int result = closedir_response.result;
+  int32_t error = closedir_response.error;
+
+  MessageBuilder response_builder;
+  response_builder.writeMessageType(message_type);
+  response_builder.write(result);
+  response_builder.write(error);
+
+  std::vector<u_int8_t> byte_response = response_builder.build();
+  return byte_response;
+};
+//
+extern ClosedirResponse DeserializeToClosedirResponse(std::vector<u_int8_t> byte_response) {
+  MessageParser response_parser(byte_response);
+  MessageType message_type = response_parser.readMessageType();
+  int result = response_parser.readInt32T();
+  int32_t error = response_parser.readInt32T();
+
+  ClosedirResponse closedir_response{result, error};
+  return closedir_response;
+};
+
+extern std::vector<u_int8_t> SerializeAuthenticateRequest(AuthenticateRequest authenticate_request){
+    MessageType message_type = MessageType::AUTHENTICATE_REQUEST;
+    std::string username = authenticate_request.username;
+    std::string password = authenticate_request.password;
+
+    MessageBuilder request_builder;
+    request_builder.writeMessageType(message_type);
+    request_builder.write(username);
+    request_builder.write(password);
+
+    std::vector<u_int8_t> byte_request = request_builder.build();
+    return byte_request;
+
+}
+extern AuthenticateRequest DeserializeAuthenticateRequest(std::vector<u_int8_t> byte_request){
+    MessageParser request_parser(byte_request);
+    MessageType message_type = request_parser.readMessageType();
+    std::string username = request_parser.readString();
+    std::string password = request_parser.readString();
+
+    AuthenticateRequest authenticate_request{username, password};
+    return authenticate_request;
+}
+extern std::vector<u_int8_t> SerializeAuthenticateResponse(AuthenticateResponse authenticate_response){
+    MessageType message_type = MessageType::AUTHENTICATE_RESPONSE;
+    int32_t result = authenticate_response.result;
+    int32_t error = authenticate_response.error;
+
+    MessageBuilder request_builder;
+    request_builder.writeMessageType(message_type);
+    request_builder.write(result);
+    request_builder.write(error);
+
+    std::vector<u_int8_t> byte_request = request_builder.build();
+    return byte_request;
+}
+extern AuthenticateResponse DeserializeAuthenticateResponse(std::vector<u_int8_t> byte_response){
+    MessageParser request_parser(byte_response);
+    MessageType message_type = request_parser.readMessageType();
+    int32_t result = request_parser.readInt32T();
+    int32_t error = request_parser.readInt32T();
+
+
+    AuthenticateResponse authenticate_response{result, error};
+    return authenticate_response;
+}
+

@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <vector>
 #include <string>
-
+#include <dirent.h>
 
 enum struct MessageType : u_int8_t {
   OPEN_REQUEST,
@@ -21,7 +21,22 @@ enum struct MessageType : u_int8_t {
   LSEEK_RESPONSE,
 
   CLOSE_REQUEST,
-  CLOSE_RESPONSE
+  CLOSE_RESPONSE,
+
+  UNLINK_REQUEST,
+  UNLINK_RESPONSE,
+
+  OPENDIR_REQUEST,
+  OPENDIR_RESPONSE,
+
+  READDIR_REQUEST,
+  READDIR_RESPONSE,
+
+  CLOSEDIR_REQUEST,
+  CLOSEDIR_RESPONSE,
+
+  AUTHENTICATE_REQUEST,
+  AUTHENTICATE_RESPONSE
 };
 
 
@@ -75,6 +90,51 @@ struct CloseRequest {
 struct CloseResponse {
   int result;
   int error;
+};
+
+struct UnlinkRequest {
+  std::string pathname;
+};
+
+struct UnlinkResponse {
+  int result;
+  int error;
+};
+
+struct OpendirRequest {
+  std::string name;
+};
+
+struct OpendirResponse {
+  int result;
+  int error;
+};
+
+struct ReaddirRequest {
+  int dirfd;
+};
+
+struct ReaddirResponse {
+  dirent *result;
+  int error;
+};
+
+struct ClosedirRequest {
+  int dirfd;
+};
+
+struct ClosedirResponse {
+  int result;
+  int error;
+};
+struct AuthenticateRequest{
+    std::string username;
+    std::string password;
+};
+
+struct AuthenticateResponse{
+    int result; // 0 - authenticated, 1 - wrong password, 2 -username doesnt exist
+    int error;
 };
 
 extern void sendMessage(int fd, std::vector<u_int8_t> request);
