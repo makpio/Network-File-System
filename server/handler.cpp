@@ -58,6 +58,7 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     std::cout << "  oflag: " << request.oflag << std::endl;
     std::cout << "  mode: " << request.mode << std::endl;
     int fileFd;
+    int result;
     try{
         int result = open(request.path.c_str(), request.oflag, request.mode);
         fileFd = mapper.addDescriptor(result);
