@@ -44,15 +44,15 @@ int main(int argc, char* argv[]){
     }
 
     std::string host = result["address"].as<std::string>();
-    std::string user = result["address"].as<std::string>();
+    std::string user = result["user"].as<std::string>();
     int port = result["port"].as<int>();
 
     // prompting for password
     std::string passwd(getpass("Password: "));
 
-    LocalFSConnector* connector = new LocalFSConnector(); 
+    Connector* connector = new NFSConnector(); 
 
-    connector->connect(host.c_str(), port, user.c_str(), passwd.c_str());
+    auto succ = connector->connect(host.c_str(), port, user.c_str(), passwd.c_str());
 
     display_welcome_message();
 
