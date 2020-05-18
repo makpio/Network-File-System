@@ -8,6 +8,8 @@ int DescriptorsMapper::operator[](int fd) {
         throw std::out_of_range("Descriptor does not exists");
 }
 int DescriptorsMapper::addDescriptor(int fd) {
+    if(fd <= 0)
+        throw std::invalid_argument("Descriptor does not exists");
     int lowestFreeFd = getLowestFreeDescriptor();
     mapper[lowestFreeFd] = fd;
     return lowestFreeFd;
