@@ -52,7 +52,17 @@ int main(int argc, char* argv[]){
 
     Connector* connector = new NFSConnector(); 
 
-    auto succ = connector->connect(host.c_str(), port, user.c_str(), passwd.c_str());
+    try{
+      auto succ = connector->connect(host.c_str(), port, user.c_str(), passwd.c_str());
+      if(succ != 0){
+        std::cout<<"Nie udało się połączyć z serwerem\n";
+        exit(-1);  
+      }
+    }
+    catch(std::domain_error e){
+      std::cout<<"Nie udało się połączyć z serwerem\n";
+      exit(-1);
+    }
 
     display_welcome_message();
 

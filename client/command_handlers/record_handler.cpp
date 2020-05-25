@@ -34,6 +34,7 @@ bool record_handler(Command c, Connector* connector){
             connector->read(fd, buffer, size+1);
             buffer[size+1] = '\0';
             std::cout<<buffer<<'\n';
+            connector->close(fd);
             return true;
         }
     }

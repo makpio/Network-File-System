@@ -15,10 +15,22 @@ bool get_handler(Command c, Saver* saver, Connector* connector){
 
     char buf[4096];
 
+    FileDescriptor fd;
+
+    try{
+        fd = connector->open(source, std::ios::in, 0);
+    }
+    catch(std::ios_base::failure e){
+        return false;
+    }
+
+    if(fd < 0){
+        return false;
+    }
+
     if(saver->open(dst) == false){
         return false;
     }
-    FileDescriptor fd = connector->open(source, std::ios::in, 0);
 
     ssize_t len;
     do{
