@@ -283,9 +283,10 @@ std::vector<u_int8_t> Handler::make_response(std::vector<u_int8_t> byte_request)
         case MessageType::UNLINK_REQUEST:
             return unlink_handler(byte_request);
         case MessageType::OPENDIR_REQUEST:
-            return opendir_handler(byte_request); /*
-  case MessageType::READDIR_REQUEST:
-    return readdir_handler(byte_request); */
+            return opendir_handler(byte_request);
+            /*
+      case MessageType::READDIR_REQUEST:
+        return readdir_handler(byte_request); */
         case MessageType::CLOSEDIR_REQUEST:
             return closedir_handler(byte_request);
         default:
