@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <string.h>
 
 #include "../libraries/core/messages.hpp"
 #include "../libraries/core/serializers.hpp"
@@ -154,7 +155,7 @@ std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
   std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
   return byte_response;
 };
-/*
+
 std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "READDIR" << std::endl;
 
@@ -163,18 +164,21 @@ std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << " dirfd: " << request.dirfd << std::endl;
 
   DIR *dirp = fdopendir(request.dirfd);
-  dirent* result =  readdir(dirp);
+  dirent* resultPtr =  readdir(dirp);
+  void * resultVoid;
+  dirent result;
+  memcpy((void *)&result,resultPtr,sizeof(result));
 
   ReaddirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
-  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  result: " << response.result.d_name << std::endl;
   std::cout << "  error: " << response.error << std::endl;
   std::cout << std::endl;
 
   std::vector<u_int8_t> byte_response = SerializeReaddirResponse(response);
   return byte_response;
 };
-*/
+
 std::vector<u_int8_t> closedir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "CLOSEDIR" << std::endl;
 
@@ -212,9 +216,9 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
   case MessageType::UNLINK_REQUEST:
     return unlink_handler(byte_request); 
   case MessageType::OPENDIR_REQUEST:
-    return opendir_handler(byte_request); /*
+    return opendir_handler(byte_request); 
   case MessageType::READDIR_REQUEST:
-    return readdir_handler(byte_request); */
+    return readdir_handler(byte_request); 
   case MessageType::CLOSEDIR_REQUEST:
     return closedir_handler(byte_request);
   default:

@@ -58,7 +58,9 @@ public:
   u_int64_t readUInt64T();
   std::vector<u_int8_t> readBytes();
   std::string readString();
+
   dirent readDirent();
+  dirent* readDirentPtr();
 
 private:
   std::vector<u_int8_t> buffer_;

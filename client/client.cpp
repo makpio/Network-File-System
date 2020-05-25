@@ -32,7 +32,7 @@ int main(){
     std::cout << "read_buffer: " << buffer << std::endl;
 */
 //open
-    char *path = "../xdd1.md";
+    char *path = "../xdd1";
     int fd = client.open(path, O_RDWR, 0);
 
     std::cout << "open_fd: " << fd << std::endl;
@@ -69,6 +69,13 @@ int main(){
     int dirfd = client.opendir(name);
     std::cout << "opendir_fd: " << dirfd << std::endl;
     std::cout << "opendir_error: " << error << std::endl;
+
+//readdir
+    
+    dirent dirent = client.readdir(dirfd);
+    std::cout << "_dirent: " << dirent.d_name<< std::endl;
+    
+
 //closedir
     int dirfd1 = client.closedir(dirfd);
     std::cout << "closedir_fd: " << dirfd1 << std::endl;
