@@ -16,8 +16,10 @@ Worker::Worker(int socket_fd) {
   this->socket_fd = socket_fd;
 }
 void Worker::run() {
-    if(!authenticateUser())
+    if(!authenticateUser()) {
+        close(socket_fd);
         return;
+    }
 
   std::vector<u_int8_t> byte_request;
   std::vector<u_int8_t> byte_response;
@@ -29,11 +31,11 @@ void Worker::run() {
       }
       catch (std::ios_base::failure&) {
           std::cout << "Ending connection with client" << std::endl;
+          close(socket_fd);
           break;
       }
   }
 }
-
 std::thread Worker::spawn() {
   return std::thread( [this] { this->run(); } );
 }

@@ -57,10 +57,16 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     std::cout << "  path: " << request.path << std::endl;
     std::cout << "  oflag: " << request.oflag << std::endl;
     std::cout << "  mode: " << request.mode << std::endl;
-    int result = open(request.path.c_str(), request.oflag, request.mode);
-
-    int fileFd = mapper.addDescriptor(result);
-
+    int fileFd;
+    int result;
+    try{
+        int result = open(request.path.c_str(), request.oflag, request.mode);
+        fileFd = mapper.addDescriptor(result);
+    }
+    catch (std::invalid_argument&) {
+        fileFd = -1;
+        errno = 1;
+    }
     OpenResponse response = {fileFd, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  client_fd: " << response.result << std::endl;
@@ -277,9 +283,10 @@ std::vector<u_int8_t> Handler::make_response(std::vector<u_int8_t> byte_request)
         case MessageType::UNLINK_REQUEST:
             return unlink_handler(byte_request);
         case MessageType::OPENDIR_REQUEST:
-            return opendir_handler(byte_request); /*
-  case MessageType::READDIR_REQUEST:
-    return readdir_handler(byte_request); */
+            return opendir_handler(byte_request);
+            /*
+      case MessageType::READDIR_REQUEST:
+        return readdir_handler(byte_request); */
         case MessageType::CLOSEDIR_REQUEST:
             return closedir_handler(byte_request);
         default:

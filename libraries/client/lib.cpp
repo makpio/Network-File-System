@@ -43,22 +43,21 @@ int NFSClient::connect4(char *host, int port, char *user, char *password) {
   struct hostent *hp;
   socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (socket_fd_ == -1) {
-    perror("opening stream socket");
-    exit(1);
+    throw std::runtime_error("Error during opening stream socket");
   }
   server.sin_family = AF_INET;
   hp = gethostbyname(host);
 
   if (hp == (struct hostent *)0) {
-    fprintf(stderr, "%s: unknown host\n", host);
-    exit(2);
+    std::cerr << host << "%s: unknown host\n";
+    throw std::runtime_error(std::string(host) + ": unknown host");
   }
 
   memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
   server.sin_port = htons(port);
   if (connect(socket_fd_, (struct sockaddr *)&server, sizeof server) == -1) {
-    perror("connecting stream socket");
-    exit(1);
+    std::cerr << "connecting stream socket";
+    throw std::runtime_error("Error during connecting stream socket");
   }
   return authenticate(user, password);
 };
@@ -76,7 +75,7 @@ int NFSClient::authenticate(char *user, char *password) {
     else if (authenticate_response.result == 1)
         throw std::domain_error("wrong password");
     else
-        throw std::domain_error("user does not exist");
+        throw std::domain_error("user: " + std::string(user) + " does not exist");
 }
 
 int NFSClient::open(char *path, int oflag, int mode) {
