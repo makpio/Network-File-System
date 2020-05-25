@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/client",
             "args": [   
-                "--user", "me", "--address", "123.123.123.123"
+                "--user", "user", "--address", "127.0.0.1"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",
