@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <vector>
 
+extern int test_libclient(int x);
+
 extern int error;
 
 class NFSClient {
@@ -27,6 +29,7 @@ private:
   int socket_fd_ = -1;
   void sendRequest_(std::vector<u_int8_t> request);
   std::vector<u_int8_t> receiveResponse_();
+  int authenticate(char *user, char *password);
 };
 
 #endif

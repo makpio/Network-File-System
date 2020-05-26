@@ -1,5 +1,3 @@
-
-
 #include <fcntl.h>
 #include <iostream>
 #include <sys/stat.h>
@@ -12,8 +10,14 @@
 #include "../libraries/core/serializers.hpp"
 
 #include "../tests/utils.hpp"
-#include "worker.h"
+//#include "worker.h"
 
+#include "worker.hpp"
+#include "handler.h"
+
+Worker::Worker(int socket_fd) {
+  this->socket_fd = socket_fd;
+}
 std::vector<u_int8_t> open_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "OPEN" << std::endl;
 
@@ -130,7 +134,6 @@ std::vector<u_int8_t> unlink_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "  result: " << response.result << std::endl;
   std::cout << "  error: " << response.error << std::endl;
   std::cout << std::endl;
-
   std::vector<u_int8_t> byte_response = SerializeUnlinkResponse(response);
   return byte_response;
 };
@@ -223,16 +226,41 @@ std::vector<u_int8_t> make_response(std::vector<u_int8_t> byte_request) {
     return std::vector<u_int8_t>{0, 0, 0, 0, 0};
   }
 }
+void Worker::run() {
+    if(!authenticateUser()) {
+        close(socket_fd);
+        return;
+    }
 
-void worker(int socket_fd) {
-  std::cout << "I am working!" << std::endl;
   std::vector<u_int8_t> byte_request;
   std::vector<u_int8_t> byte_response;
-  while (true) {
-    byte_request = receiveMessage(socket_fd);
-    byte_response = make_response(byte_request);
-    sendMessage(socket_fd, byte_response);
+  while(true){
+      try{
+          byte_request = receiveMessage(socket_fd);
+          byte_response = handler.make_response(byte_request);
+          sendMessage(socket_fd, byte_response);
+      }
+      catch (std::ios_base::failure&) {
+          std::cout << "Ending connection with client" << std::endl;
+          close(socket_fd);
+          break;
+      }
   }
 }
+std::thread Worker::spawn() {
+  return std::thread( [this] { this->run(); } );
+}
 
+bool Worker::authenticateUser() {
+    std::vector<u_int8_t> byte_request = receiveMessage(socket_fd);
+
+    MessageParser parser = MessageParser(byte_request);
+    if(parser.readMessageType() != MessageType::AUTHENTICATE_REQUEST)
+        return false;
+    AuthenticateResponse authenticateResponse = handler.authenticate_handler(byte_request);
+    bool isAuthenticated = authenticateResponse.result == 0;
+
+    sendMessage(socket_fd, SerializeAuthenticateResponse(authenticateResponse));
+    return isAuthenticated;
+}
 

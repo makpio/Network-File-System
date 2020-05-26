@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(NFS)
-
-file(GLOB SOURCES_CORE "libraries/core/*.cpp" "libraries/core/*.hpp")
-message( "${SOURCES_CORE}")
-add_library(core ${SOURCES_CORE})
-
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
@@ -20,11 +16,15 @@ add_library(libclient ${SOURCES_LIBCLIENT})
 
 
 file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
-add_executable(server ${SOURCES_SERVER})
-target_link_libraries(server PUBLIC libcore)
+find_package( Threads )
+add_executable(server ${SOURCES_SERVER} server/DescriptorsMapper.cpp server/DescriptorsMapper.h server/handler.cpp server/handler.h)
+target_link_libraries(server PUBLIC libcore ${CMAKE_THREAD_LIBS_INIT})
 
-file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp")
+
+file(GLOB SOURCES_CLIENT "client/*.cpp" "client/*.hpp" "client/*.h" "client/command_handlers/*.h" "client/command_handlers/*.cpp" "client/include/linenoise/linenoise/*.h" "client/include/linenoise/linenoise/linenoise.c")
+
 add_executable(client ${SOURCES_CLIENT})
+target_link_libraries(client PUBLIC stdc++fs)
 target_link_libraries(libclient PUBLIC libcore)
 target_link_libraries(client PUBLIC libclient)
 

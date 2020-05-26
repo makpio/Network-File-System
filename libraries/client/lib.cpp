@@ -37,29 +37,46 @@ extern int test_libclient(int x) { return test_libcore(x) * 321; };
 extern int error = -1;
 
 NFSClient::NFSClient(){};
+
 int NFSClient::connect4(char *host, int port, char *user, char *password) {
   struct sockaddr_in server;
   struct hostent *hp;
   socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (socket_fd_ == -1) {
-    perror("opening stream socket");
-    exit(1);
+    throw std::runtime_error("Error during opening stream socket");
   }
   server.sin_family = AF_INET;
   hp = gethostbyname(host);
 
   if (hp == (struct hostent *)0) {
-    fprintf(stderr, "%s: unknown host\n", host);
-    exit(2);
+    std::cerr << host << "%s: unknown host\n";
+    throw std::runtime_error(std::string(host) + ": unknown host");
   }
 
   memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
   server.sin_port = htons(port);
   if (connect(socket_fd_, (struct sockaddr *)&server, sizeof server) == -1) {
-    perror("connecting stream socket");
-    exit(1);
+    std::cerr << "connecting stream socket";
+    throw std::runtime_error("Error during connecting stream socket");
   }
+  return authenticate(user, password);
 };
+
+int NFSClient::authenticate(char *user, char *password) {
+    AuthenticateRequest authenticate_request{user, password};
+    std::vector<u_int8_t> byte_request = SerializeAuthenticateRequest(authenticate_request);
+
+    sendRequest_(byte_request);
+    std::vector<u_int8_t> byte_response = receiveResponse_();
+
+    AuthenticateResponse authenticate_response = DeserializeAuthenticateResponse(byte_response);
+    if (authenticate_response.result == 0)
+        return authenticate_response.result;
+    else if (authenticate_response.result == 1)
+        throw std::domain_error("wrong password");
+    else
+        throw std::domain_error("user: " + std::string(user) + " does not exist");
+}
 
 int NFSClient::open(char *path, int oflag, int mode) {
   OpenRequest open_request{path, oflag, mode};
@@ -74,7 +91,7 @@ int NFSClient::open(char *path, int oflag, int mode) {
 };
 
 ssize_t NFSClient::read(int fd, void *buf, size_t count) {
-  ReadRequest read_request{fd, count};
+  ReadRequest read_request{fd, static_cast<ssize_t>(count)};
   std::vector<u_int8_t> byte_request = SerializeReadRequest(read_request);
 
   sendRequest_(byte_request);
