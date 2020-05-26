@@ -73,7 +73,9 @@ int main(){
 //readdir
     
     dirent dirent = client.readdir(dirfd);
-    std::cout << "_dirent: " << dirent.d_name<< std::endl;
+    std::cout << "dirent.D_NAME: " << dirent.d_name<< std::endl;
+   // std::cout<<"dirent.D_OFF: "<<dirent.d_off<<std::endl;
+  // std::cout<<"direntD_reclen: "<<dirent.d_reclen<<std::endl;
     
 
 //closedir
