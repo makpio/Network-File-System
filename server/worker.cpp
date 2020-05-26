@@ -56,7 +56,7 @@ std::vector<u_int8_t> read_handler(std::vector<u_int8_t> byte_request) {
   return byte_response;
 }
 
-//+
+
 std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "WRITE" << std::endl;
 
@@ -76,7 +76,6 @@ std::vector<u_int8_t> write_handler(std::vector<u_int8_t> byte_request) {
   return byte_response;
 };
 
-//+
 std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "LSEEK" << std::endl;
 
@@ -97,7 +96,7 @@ std::vector<u_int8_t> lseek_handler(std::vector<u_int8_t> byte_request) {
   std::vector<u_int8_t> byte_response = SerializeLseekResponse(response);
   return byte_response;
 };
-//+
+
 std::vector<u_int8_t> close_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "CLOSE" << std::endl;
 
@@ -116,7 +115,7 @@ std::vector<u_int8_t> close_handler(std::vector<u_int8_t> byte_request) {
   std::vector<u_int8_t> byte_response = SerializeCloseResponse(response);
   return byte_response;
 };
-//+
+
 std::vector<u_int8_t> unlink_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "UNLINK" << std::endl;
 
@@ -165,7 +164,6 @@ std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
 
   DIR *dirp = fdopendir(request.dirfd);
   dirent* resultPtr =  readdir(dirp);
-  void * resultVoid;
   dirent result;
   memcpy((void *)&result,resultPtr,sizeof(result));
 
