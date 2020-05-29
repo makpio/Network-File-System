@@ -30,13 +30,46 @@ target_link_libraries(client PUBLIC libclient)
 
 MESSAGE("adding tests")
 
-file(GLOB TESTS "tests/*.cpp")
+file(GLOB TESTS "tests/*.cpp" "client/tests/*.cpp")
+
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.10.0
+)
+
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_Populate(googletest)
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+endif()
+
+
+file(GLOB HANDLERS "client/command_handlers/*")
+
+
 
 foreach(TEST ${TESTS})
     MESSAGE("adding ${TEST}")
     get_filename_component(NAME "test_${TEST}" NAME_WE)
-    add_executable(${NAME} ${TEST})
-    target_link_libraries(${NAME} PUBLIC libcore)
-    target_link_libraries(${NAME} PUBLIC libclient)
+    set(NAME "test_${NAME}")
+    add_executable(${NAME} ${TEST} ${HANDLERS})
+    
+    target_link_libraries(${NAME} PUBLIC libclient gtest gmock gtest_main libcore)
+endforeach()
+
+  
+file(GLOB PERF_TESTS "performance_tests/*")
+
+foreach(TEST ${PERF_TESTS})
+    MESSAGE("adding ${TEST}")
+    get_filename_component(NAME "perftest_${TEST}" NAME_WE)
+    set(NAME "perftest_${NAME}")
+    add_executable(${NAME} ${TEST} ${HANDLERS})
+    
+    target_link_libraries(${NAME} PUBLIC libclient libcore)
+  
 
 endforeach()
