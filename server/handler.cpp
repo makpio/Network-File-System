@@ -64,7 +64,8 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     int result;
 
     try {
-        if(result = open(request.path.c_str(), request.oflag, request.mode) != -1)
+        result = open(request.path.c_str(), request.oflag, request.mode);
+        if(result >= 0)
             fileFd = mapper.addDescriptor(result);
         else {
             fileFd = -1;
