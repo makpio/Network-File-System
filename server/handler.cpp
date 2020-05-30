@@ -62,14 +62,21 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     std::cout << "  mode: " << request.mode << std::endl;
     int fileFd;
     int result;
-    try{
-        int result = open(request.path.c_str(), request.oflag, request.mode);
-        fileFd = mapper.addDescriptor(result);
+
+    if(result = open(request.path.c_str(), request.oflag, request.mode) != -1){
+        try {
+            fileFd = mapper.addDescriptor(result);
+        }
+        catch (std::invalid_argument&) {
+            fileFd = -1;
+            errno = 1;
+        }
     }
-    catch (std::invalid_argument&) {
+    else {
         fileFd = -1;
         errno = 1;
     }
+
     OpenResponse response = {fileFd, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  client_fd: " << response.result << std::endl;

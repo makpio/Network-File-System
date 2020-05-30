@@ -14,7 +14,6 @@ add_library(libcore ${SOURCES_LIBCORE})
 file(GLOB SOURCES_LIBCLIENT "libraries/client/*.cpp" "libraries/client/*.hpp")
 add_library(libclient ${SOURCES_LIBCLIENT})
 
-
 file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
 find_package( Threads )
 add_executable(server ${SOURCES_SERVER} server/DescriptorsMapper.cpp server/DescriptorsMapper.h server/handler.cpp server/handler.h)
