@@ -8,12 +8,9 @@
 #include "handler.h"
 #include "../libraries/core/serializers.hpp"
 
-<<<<<<< HEAD
 #include <stdio.h>
 #include <string.h>
 
-=======
->>>>>>> e03ac3470ff425c3be020eb68e0a9c2292f8e906
 const std::string Handler::shadowFilePath = "../server/shadowfile.txt";
 
 AuthenticateResponse Handler::authenticate_handler(std::vector<u_int8_t> byte_request){
@@ -231,7 +228,7 @@ std::vector<u_int8_t> Handler::opendir_handler(std::vector<u_int8_t> byte_reques
     std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
     return byte_response;
 };
-/*
+
 std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "READDIR" << std::endl;
 
@@ -253,7 +250,7 @@ std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_reques
   std::vector<u_int8_t> byte_response = SerializeReaddirResponse(response);
   return byte_response;
 };
-*/
+
 std::vector<u_int8_t> Handler::closedir_handler(std::vector<u_int8_t> byte_request) {
     std::cout << "CLOSEDIR" << std::endl;
 
