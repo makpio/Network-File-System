@@ -63,16 +63,15 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     int fileFd;
     int result;
 
-    if(result = open(request.path.c_str(), request.oflag, request.mode) != -1){
-        try {
+    try {
+        if(result = open(request.path.c_str(), request.oflag, request.mode) != -1)
             fileFd = mapper.addDescriptor(result);
-        }
-        catch (std::invalid_argument&) {
+        else {
             fileFd = -1;
             errno = 1;
         }
     }
-    else {
+    catch (std::invalid_argument&) {
         fileFd = -1;
         errno = 1;
     }
