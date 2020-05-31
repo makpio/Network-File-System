@@ -115,7 +115,7 @@ struct ReaddirRequest {
 };
 
 struct ReaddirResponse {
-  dirent *result;
+  dirent result;
   int error;
 };
 

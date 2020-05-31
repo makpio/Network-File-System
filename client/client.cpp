@@ -2,6 +2,9 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
+
+#include "../libraries/client/lib.hpp"
 
 #include "include/lib.hpp"
 #include "utils.h"
@@ -10,9 +13,6 @@
 #include "include/cxxopts.hpp"
 #include "linenoise_setup.h"
 
-
-
-#include <signal.h>
 
 bool uNFS_EXIT = false;
 

@@ -8,6 +8,9 @@
 #include "handler.h"
 #include "../libraries/core/serializers.hpp"
 
+#include <stdio.h>
+#include <string.h>
+
 const std::string Handler::shadowFilePath = "../server/shadowfile.txt";
 
 AuthenticateResponse Handler::authenticate_handler(std::vector<u_int8_t> byte_request){
@@ -59,14 +62,21 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     std::cout << "  mode: " << request.mode << std::endl;
     int fileFd;
     int result;
-    try{
-        int result = open(request.path.c_str(), request.oflag, request.mode);
-        fileFd = mapper.addDescriptor(result);
+
+    try {
+        result = open(request.path.c_str(), request.oflag, request.mode);
+        if(result >= 0)
+            fileFd = mapper.addDescriptor(result);
+        else {
+            fileFd = -1;
+            errno = 1;
+        }
     }
     catch (std::invalid_argument&) {
         fileFd = -1;
         errno = 1;
     }
+
     OpenResponse response = {fileFd, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  client_fd: " << response.result << std::endl;
@@ -225,7 +235,7 @@ std::vector<u_int8_t> Handler::opendir_handler(std::vector<u_int8_t> byte_reques
     std::vector<u_int8_t> byte_response = SerializeOpendirResponse(response);
     return byte_response;
 };
-/*
+
 std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_request) {
   std::cout << "READDIR" << std::endl;
 
@@ -234,18 +244,20 @@ std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_reques
   std::cout << " dirfd: " << request.dirfd << std::endl;
 
   DIR *dirp = fdopendir(request.dirfd);
-  dirent* result =  readdir(dirp);
+  dirent* resultPtr =  readdir(dirp);
+  dirent result;
+  memcpy((void *)&result,resultPtr,sizeof(result));
 
   ReaddirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
-  std::cout << "  result: " << response.result << std::endl;
+  std::cout << "  result: " << response.result.d_name << std::endl;
   std::cout << "  error: " << response.error << std::endl;
   std::cout << std::endl;
 
   std::vector<u_int8_t> byte_response = SerializeReaddirResponse(response);
   return byte_response;
 };
-*/
+
 std::vector<u_int8_t> Handler::closedir_handler(std::vector<u_int8_t> byte_request) {
     std::cout << "CLOSEDIR" << std::endl;
 
@@ -284,9 +296,8 @@ std::vector<u_int8_t> Handler::make_response(std::vector<u_int8_t> byte_request)
             return unlink_handler(byte_request);
         case MessageType::OPENDIR_REQUEST:
             return opendir_handler(byte_request);
-            /*
-      case MessageType::READDIR_REQUEST:
-        return readdir_handler(byte_request); */
+        case MessageType::READDIR_REQUEST:
+            return readdir_handler(byte_request); 
         case MessageType::CLOSEDIR_REQUEST:
             return closedir_handler(byte_request);
         default:
