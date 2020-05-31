@@ -35,6 +35,9 @@ bool get_handler(Command c, Saver* saver, Connector* connector){
     ssize_t len;
     do{
         len = connector->read(fd, buf, 4096);
+        if(len == 0){
+            break;
+        }
         saver->save(buf, len);
     }while(len != 0);
     
