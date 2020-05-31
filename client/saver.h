@@ -6,6 +6,7 @@
 
 class Saver{
     public:
+    virtual ~Saver(){};
     virtual bool save(char* buffer, uint len)=0;
     virtual bool open(std::string name)=0;
     virtual void close()=0;
