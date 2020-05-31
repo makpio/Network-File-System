@@ -15,7 +15,7 @@ using FileInfo = std::string;
 
 class Connector{
 public:
-    
+    virtual ~Connector() {};
     virtual int connect(std::string host, uint port, std::string user, std::string passwd)=0;
     virtual int open(std::string path, int oflag, int mode)=0;
     virtual ssize_t read(FileDescriptor fd, char *buf, size_t count)=0;
@@ -50,11 +50,9 @@ public:
     ssize_t write(FileDescriptor fd, const char* buf, size_t count);
     int close(FileDescriptor fd);
 
-    bool ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
-        std::cout<<"sorki, to jeszcze nie zostało zaimplementowane\n";
-    }
+    bool ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs);
     off_t lseek(int fd, off_t offset, int whence);
-
+    ~NFSConnector(){};
 private:
     NFSClient* client=nullptr;
 };

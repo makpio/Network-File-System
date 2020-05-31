@@ -110,3 +110,16 @@ int NFSConnector::close(FileDescriptor fd){
 off_t NFSConnector::lseek(int fd, off_t offset, int whence){
     return client->lseek(fd, offset, whence);
 }
+
+bool NFSConnector::ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
+    auto dd = client->opendir(path.c_str());
+    do{
+        auto dirend_ptr = client->readdir(dd);
+        if(dirend_ptr == nullptr){
+            break;
+        }
+        dirs.push_back(std::string(dirend_ptr->d_name));
+    }while(true);
+
+    return client->closedir(dd);
+}
