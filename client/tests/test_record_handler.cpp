@@ -11,17 +11,15 @@
 using ::testing::_;
 using namespace testing;
 
-TEST(get_handler, connection_closes_after_saver_opening_error){
+TEST(record_handler, record_too_large){
 
     mock_connector conn;
-    NiceMock<mock_saver_> s;
     Command c;
-    c.type = Command::Get;
-    c.command_string = std::string("get test_file.txt test_file.txt");
+    c.type = Command::Record;
+    c.command_string = std::string("record test_file.txt 20000 3");
 
     ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
     ON_CALL(conn, read(_, _, _)).WillByDefault(Return(0));
-    ON_CALL(s, open(_)).WillByDefault(Return(false));
     EXPECT_CALL(conn, open(_, _, _)).Times(0);
 
     EXPECT_CALL(conn, read(_, _, _))
@@ -29,36 +27,61 @@ TEST(get_handler, connection_closes_after_saver_opening_error){
     
     EXPECT_CALL(conn, close(_)).Times(0);
 
-    EXPECT_FALSE(get_handler(c, &s, &conn));
+    EXPECT_FALSE(record_handler(c, &conn));
 
 }
 
-TEST(get_handler, connection_closes_after_empty_file){
+TEST(record_handler, Wrong_command){
 
     mock_connector conn;
-    ::testing::NiceMock<mock_saver_> s;
     Command c;
-    c.type = Command::Get;
-    c.command_string = std::string("get test_file.txt test_file.txt");
+    c.type = Command::Record;
+    c.command_string = std::string("record test_file.txt 3");
 
     ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
     ON_CALL(conn, read(_, _, _)).WillByDefault(Return(0));
-    ON_CALL(s, open(_)).WillByDefault(Return(true));
-    
-    EXPECT_CALL(conn, open(_, _, _)).Times(1);
+    EXPECT_CALL(conn, open(_, _, _)).Times(0);
+
     EXPECT_CALL(conn, read(_, _, _))
-        .Times(1);
+        .Times(0);
     
-    EXPECT_CALL(conn, close(_)).Times(1);
+    EXPECT_CALL(conn, close(_)).Times(0);
 
-    EXPECT_CALL(s, save(_, 0)).Times(0);
-    EXPECT_CALL(s, close()).Times(1);
-
-    EXPECT_TRUE(get_handler(c, &s, &conn));
+    
+    EXPECT_FALSE(record_handler(c, &conn));
+    c.command_string = std::string("record test_file.txt 3");
+    EXPECT_FALSE(record_handler(c, &conn));
+    c.command_string = std::string("record 3 3");
+    EXPECT_FALSE(record_handler(c, &conn));
+    c.command_string = std::string("record test_file.txt");
+    EXPECT_FALSE(record_handler(c, &conn));
+    c.command_string = std::string("record");
+    EXPECT_FALSE(record_handler(c, &conn));
 
 }
 
-TEST(get_handler, everything_fine){
+TEST(record_handler, record_not_in_file){
+
+    mock_connector conn;
+    Command c;
+    c.type = Command::Record;
+    c.command_string = std::string("record test_file.txt 30 40");
+
+    ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
+    ON_CALL(conn, read(_, _, _)).WillByDefault(Return(3));
+    ON_CALL(conn, lseek(_, _, _)).WillByDefault(Return(1000));
+    
+    EXPECT_CALL(conn, open(_, _, _)).Times(1);
+    EXPECT_CALL(conn, lseek(_, _, _)).Times(1);
+    EXPECT_CALL(conn, read(_, _, _))
+        .Times(0);
+    
+    EXPECT_CALL(conn, close(_)).Times(1);
+
+    EXPECT_FALSE(record_handler(c, &conn));
+}
+
+TEST(record_handler, everything_fine){
 
     mock_connector conn;
     ::testing::NiceMock<mock_saver_> s;

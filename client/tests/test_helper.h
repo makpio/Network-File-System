@@ -9,6 +9,7 @@
 #include "../connector.h"
 
 #include "../saver.h"
+#include "../reader.h"
 
 class mock_connector: public Connector{
 public:
@@ -21,6 +22,13 @@ public:
     MOCK_METHOD(int, close, (FileDescriptor fd));
     MOCK_METHOD(off_t, lseek, (int fd, off_t offset, int whence));
 
+};
+
+class mock_reader_: public Reader{
+public:
+    MOCK_METHOD(ssize_t, read, (char* buffer, uint len));
+    MOCK_METHOD(bool, open, (std::string name));
+    MOCK_METHOD(void, close, ());
 };
 
 

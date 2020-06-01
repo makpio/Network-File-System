@@ -11,15 +11,15 @@
 using ::testing::_;
 using namespace testing;
 
-TEST(get_handler, connection_closes_after_saver_opening_error){
+TEST(put_handler, reader_opening_error){
 
     mock_connector conn;
-    NiceMock<mock_saver_> s;
+    NiceMock<mock_reader_> s;
     Command c;
-    c.type = Command::Get;
-    c.command_string = std::string("get test_file.txt test_file.txt");
+    c.type = Command::Put;
+    c.command_string = std::string("put test_file.txt test_file.txt");
 
-    ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
+    ON_CALL(conn, open(_, _, _)).WillByDefault(Return(0));
     ON_CALL(conn, read(_, _, _)).WillByDefault(Return(0));
     ON_CALL(s, open(_)).WillByDefault(Return(false));
     EXPECT_CALL(conn, open(_, _, _)).Times(0);
@@ -29,41 +29,39 @@ TEST(get_handler, connection_closes_after_saver_opening_error){
     
     EXPECT_CALL(conn, close(_)).Times(0);
 
-    EXPECT_FALSE(get_handler(c, &s, &conn));
+    EXPECT_FALSE(put_handler(c, &s, &conn));
 
 }
 
-TEST(get_handler, connection_closes_after_empty_file){
+TEST(put_handler, empty_buffer_read){
 
     mock_connector conn;
-    ::testing::NiceMock<mock_saver_> s;
+    ::testing::NiceMock<mock_reader_> s;
     Command c;
-    c.type = Command::Get;
+    c.type = Command::Put;
     c.command_string = std::string("get test_file.txt test_file.txt");
 
     ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
-    ON_CALL(conn, read(_, _, _)).WillByDefault(Return(0));
+    ON_CALL(s, read(_, _)).WillByDefault(Return(0));
     ON_CALL(s, open(_)).WillByDefault(Return(true));
     
     EXPECT_CALL(conn, open(_, _, _)).Times(1);
-    EXPECT_CALL(conn, read(_, _, _))
-        .Times(1);
+    EXPECT_CALL(conn, write(_, _, _))
+        .Times(0);
     
     EXPECT_CALL(conn, close(_)).Times(1);
-
-    EXPECT_CALL(s, save(_, 0)).Times(0);
     EXPECT_CALL(s, close()).Times(1);
 
-    EXPECT_TRUE(get_handler(c, &s, &conn));
+    EXPECT_TRUE(put_handler(c, &s, &conn));
 
 }
 
-TEST(get_handler, everything_fine){
+TEST(put_handler, everything_fine){
 
     mock_connector conn;
-    ::testing::NiceMock<mock_saver_> s;
+    ::testing::NiceMock<mock_reader_> s;
     Command c;
-    c.type = Command::Get;
+    c.type = Command::Put;
     c.command_string = std::string("get test_file.txt test_file.txt");
 
     std::vector<long int> tab{20, 0};
@@ -71,23 +69,23 @@ TEST(get_handler, everything_fine){
 
     ON_CALL(conn, open(_, _, _)).WillByDefault(Return(1));
     
-    ON_CALL(conn, read(_, _, _)).WillByDefault(Invoke(
-        [tab, &idx](int a, char* b, long unsigned int v){return tab[idx++];}
+    ON_CALL(s, read(_, _)).WillByDefault(Invoke(
+        [tab, &idx](char* a, int){return tab[idx++];}
     ));
 
     ON_CALL(s, open(_)).WillByDefault(Return(true));
     
     EXPECT_CALL(conn, open(_, _, _)).Times(1);
-    EXPECT_CALL(conn, read(_, _, _))
+    EXPECT_CALL(s, read(_, _))
         .Times(2);
     
     EXPECT_CALL(conn, close(_)).Times(1);
 
-    EXPECT_CALL(s, save(_, 20)).Times(1);
-    EXPECT_CALL(s, save(_, 0)).Times(0);
+    EXPECT_CALL(conn, write(_, _, 20)).Times(1);
+    EXPECT_CALL(conn, write(_, _, 0)).Times(0);
     EXPECT_CALL(s, close()).Times(1);
 
-    EXPECT_TRUE(get_handler(c, &s, &conn));
+    EXPECT_TRUE(put_handler(c, &s, &conn));
 
 }
 
