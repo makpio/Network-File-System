@@ -7,6 +7,7 @@
 
 int run_loop(Connector* connector, bool& exit){
     bool _run = true;
+    bool succ = true;
     while(_run && (!exit)){
         
         Command command = get_command();
@@ -27,16 +28,16 @@ int run_loop(Connector* connector, bool& exit){
             }
             case Command::Get:{
                 Mock_saver s;
-                get_handler(command, &s, connector);
+                succ = get_handler(command, &s, connector);
                 break;
             }
             case Command::Put:{
                 Mock_reader r;
-                put_handler(command, &r, connector);
+                succ = put_handler(command, &r, connector);
                 break;
             }
             case Command::Get_dir:{
-                get_dir_handler(command, connector);
+                succ = get_dir_handler(command, connector);
                 break;
             }
             case Command::Exit:{
@@ -47,7 +48,7 @@ int run_loop(Connector* connector, bool& exit){
                 break;
             }
             case Command::Record:{
-                record_handler(command, connector);
+                succ = record_handler(command, connector);
                 break;
             }
             case Command::Not_implemented:{
@@ -58,6 +59,9 @@ int run_loop(Connector* connector, bool& exit){
                 show_not_implemented_info();
                 break;
             }
+        }
+        if(succ == false){
+            show_command_failed_info();
         }
     }
     return 0;
