@@ -566,10 +566,12 @@ extern ReaddirRequest DeserializeToReaddirRequest(std::vector<u_int8_t> byte_req
 
 extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_response) {
   MessageType message_type = MessageType::READDIR_RESPONSE;
+  int32_t isDirentNull = readdir_response.isDirentNull;
   dirent result = readdir_response.result;
   int32_t error = readdir_response.error;
   MessageBuilder response_builder;
   response_builder.writeMessageType(message_type);
+  response_builder.write(isDirentNull);
   response_builder.write(result); 
   response_builder.write(error);
   std::vector<u_int8_t> byte_response = response_builder.build();
@@ -579,10 +581,11 @@ extern std::vector<u_int8_t> SerializeReaddirResponse(ReaddirResponse readdir_re
 extern ReaddirResponse DeserializeToReaddirResponse(std::vector<u_int8_t> byte_response) {
   MessageParser response_parser(byte_response);
   MessageType message_type = response_parser.readMessageType();
+  int32_t isDirentNull = response_parser.readInt32T();
   dirent result = response_parser.readDirent();
   int32_t error = response_parser.readInt32T();
 
-  ReaddirResponse readdir_response{result, error};
+  ReaddirResponse readdir_response{isDirentNull, result, error};
   return readdir_response;
 };
 

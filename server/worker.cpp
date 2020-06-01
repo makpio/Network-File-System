@@ -164,13 +164,22 @@ std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   ReaddirRequest request = DeserializeToReaddirRequest(byte_request);
   std::cout << "Request:" << std::endl;
   std::cout << " dirfd: " << request.dirfd << std::endl;
-
+  int isDirentNull = 0;
   DIR *dirp = fdopendir(request.dirfd);
-  dirent* resultPtr =  readdir(dirp);
   dirent result;
-  memcpy((void *)&result,resultPtr,sizeof(result));
+  if (dirp == nullptr)
+    isDirentNull = 1;
+  else
+  {
+      dirent* resultPtr =  readdir(dirp);
+    
+      if (resultPtr == nullptr)
+        isDirentNull = 1;
+      else
+        memcpy((void *)&result,resultPtr,sizeof(result));
+  }
 
-  ReaddirResponse response = {result, errno};
+  ReaddirResponse response = {isDirentNull, result, errno};
   std::cout << "Response:" << std::endl;
   std::cout << "  result: " << response.result.d_name << std::endl;
   std::cout << "  error: " << response.error << std::endl;

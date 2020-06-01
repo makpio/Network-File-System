@@ -115,6 +115,7 @@ struct ReaddirRequest {
 };
 
 struct ReaddirResponse {
+  int isDirentNull;
   dirent result;
   int error;
 };
