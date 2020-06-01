@@ -51,4 +51,8 @@ std::string convertToString(char* a, int size) {
 void show_not_implemented_info(){
     std::cout<<"We are sorry but your command has not yet been implemented or is incorrect\n";
 }
+
+void show_command_failed_info(){
+    std::cout<<"Sorry, command has failed :/\n";
+}
   

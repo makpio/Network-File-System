@@ -15,4 +15,6 @@ void display_help();
 std::string convertToString(char* a, int size);
 void show_not_implemented_info();
 
+void show_command_failed_info();
+
 #endif
