@@ -1,4 +1,7 @@
 #include "../libraries/client/lib.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -38,7 +41,7 @@ int main(int argc, char* argv[]){
     for(int i = repeats; i >0; --i){
         auto beg = std::chrono::high_resolution_clock::now();
 
-        auto fd = client.open(argv[4], 0, std::ios::in);
+        auto fd = client.open(argv[4],  O_WRONLY, 0);
         client.write(fd, buff, 1024);
         client.close(fd);
 
