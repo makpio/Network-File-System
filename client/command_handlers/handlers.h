@@ -6,6 +6,7 @@
 #include "../connector.h"
 #include <sstream>
 #include <limits>
+#include <sys/types.h>
 
 
 bool get_handler(Command c, Saver *saver, Connector *);

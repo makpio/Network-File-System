@@ -1,4 +1,6 @@
 #include "handlers.h"
+#include <sys/stat.h>
+#include <fcntl.h>
 
 bool record_handler(Command c, Connector* connector){
     if(c.type != Command::Record){
@@ -24,7 +26,7 @@ bool record_handler(Command c, Connector* connector){
 
     char buffer[size+2];
 
-    auto fd = connector->open(file, 0, std::ios::out);
+    auto fd = connector->open(file, O_RDONLY, 0);
 
     auto r = connector->lseek(fd, 0, SEEK_END);
     if(r!=-1){

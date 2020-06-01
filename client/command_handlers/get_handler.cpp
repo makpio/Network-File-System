@@ -1,6 +1,8 @@
 #include "handlers.h"
 #include <sstream>
 #include <limits>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 bool get_handler(Command c, Saver* saver, Connector* connector){
     if(c.type != Command::Get){
@@ -13,12 +15,16 @@ bool get_handler(Command c, Saver* saver, Connector* connector){
     ss >> source;
     ss >> dst;
 
+    if(saver->open(dst) == false){
+        return false;
+    }
+
     char buf[4096];
 
     FileDescriptor fd;
 
     try{
-        fd = connector->open(source, std::ios::in, 0);
+        fd = connector->open(source, O_RDONLY, 0);
     }
     catch(std::ios_base::failure e){
         return false;
@@ -28,9 +34,7 @@ bool get_handler(Command c, Saver* saver, Connector* connector){
         return false;
     }
 
-    if(saver->open(dst) == false){
-        return false;
-    }
+    
 
     ssize_t len;
     do{
