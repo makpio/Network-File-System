@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <experimental/filesystem>
+#include <sys/types.h>
 
 /**
  * LocalFSConnector
@@ -114,12 +115,13 @@ off_t NFSConnector::lseek(int fd, off_t offset, int whence){
 bool NFSConnector::ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
     auto dd = client->opendir(path.c_str());
     do{
-        auto dirend_ptr = client->readdir(dd);
-        if(dirend_ptr == nullptr){
+        dirent dirend_ptr = client->readdir(dd);
+        if(error != 0){
             break;
         }
-        dirs.push_back(std::string(dirend_ptr->d_name));
+        dirs.push_back(std::string(dirend_ptr.d_name));
     }while(true);
 
-    return client->closedir(dd);
+    client->closedir(dd);
+    return error == 0;
 }
