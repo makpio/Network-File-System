@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
     client.connect4(argv[2], 9000, argv[1], argv[3]);
 
     auto beg = std::chrono::high_resolution_clock::now();
-    auto fd = client.open(argv[4], 0, std::ios::in);
+    auto fd = client.open(argv[4], O_RDONLY, 0);
 
     unsigned int num_frames = 0;
 

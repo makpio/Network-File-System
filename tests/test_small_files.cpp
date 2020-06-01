@@ -32,12 +32,12 @@ int main(int argc, char* argv[]){
     for(int i = repeats; i >0; --i){
         auto beg = std::chrono::high_resolution_clock::now();
 
-        auto fd = client.open(argv[4], 0, std::ios::in);
+        auto fd = client.open(argv[4], O_RDONLY, 0);
         client.read(fd, buff, 1024);
         client.close(fd);
 
         auto end = std::chrono::high_resolution_clock::now();
-        double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg).count(); 
+        double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg).count();
         times.push_back(time_taken / (double)1e9);
     }
 

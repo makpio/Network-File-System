@@ -22,7 +22,7 @@ int func(std::string user, std::string address, std::string file_name, std::vect
     for(int i = repeats; i >0; --i){
         auto beg = std::chrono::high_resolution_clock::now();
 
-        auto fd = client.open((char*) file_name.c_str(), 0, std::ios::in);
+        auto fd = client.open((char*) file_name.c_str(), O_RDONLY, 0);
         client.read(fd, buff, 1024);
         client.close(fd);
 
