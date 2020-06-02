@@ -5,6 +5,8 @@
 #include <string>
 #include <math.h>
 #include <numeric>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <algorithm>
 
 int func(std::string user, std::string address, std::string file_name, std::vector<double>& times){
