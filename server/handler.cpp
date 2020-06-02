@@ -251,14 +251,11 @@ std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_reques
   else
   {
       dirent* resultPtr =  readdir(dirp);
-      while (resultPtr != nullptr)  
-      {
+        
+      if (resultPtr == nullptr)
+        isDirentNull = 1;
+      else
         memcpy((void *)&result,resultPtr,sizeof(result));
-        dirent* resultPtr =  readdir(dirp);
-      }
-
-      isDirentNull = 1;
-      
   }
 
   ReaddirResponse response = {isDirentNull, result, errno};
