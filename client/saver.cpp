@@ -42,16 +42,19 @@ bool FSSaver::save(char* buffer, uint len){
 }
 
 bool FSSaver::open(std::string file_name){
-    if(s != nullptr){
+    if(s == nullptr){
         return false;
     }
-    s->open(file_name, std::ios::in);
+    s->open(file_name, std::ios::out);
     return s->good();
 }
 
 void FSSaver::close(){
-    s->close();
-    delete s;
+    if(s != nullptr){
+        s->close();
+        delete s;
+        s = nullptr;
+    }
 }
 
 FSSaver::~FSSaver(){
