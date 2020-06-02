@@ -16,7 +16,7 @@ add_library(libclient ${SOURCES_LIBCLIENT})
 
 file(GLOB SOURCES_SERVER "server/*.cpp" "server/*.hpp")
 find_package( Threads )
-add_executable(server ${SOURCES_SERVER} server/DescriptorsMapper.cpp server/DescriptorsMapper.h server/handler.cpp server/handler.h)
+add_executable(server ${SOURCES_SERVER} server/DescriptorsMapper.h server/handler.cpp server/handler.h)
 target_link_libraries(server PUBLIC libcore ${CMAKE_THREAD_LIBS_INIT})
 
 

@@ -66,7 +66,7 @@ std::vector<u_int8_t> Handler::open_handler(std::vector<u_int8_t> byte_request) 
     try {
         result = open(request.path.c_str(), request.oflag, request.mode);
         if(result >= 0)
-            fileFd = mapper.addDescriptor(result);
+            fileFd = fileMapper.addDescriptor(result);
         else {
             fileFd = -1;
             errno = 1;
@@ -98,7 +98,7 @@ std::vector<u_int8_t> Handler::read_handler(std::vector<u_int8_t> byte_request) 
     int result;
     std::vector<u_int8_t> buf = std::vector<u_int8_t>(request.count);
     try {
-        int server_fd = mapper[request.fd];
+        int server_fd = fileMapper[request.fd];
         result = read(server_fd, buf.data(), request.count);
         buf.resize(result);
     }
@@ -124,7 +124,7 @@ std::vector<u_int8_t> Handler::write_handler(std::vector<u_int8_t> byte_request)
     std::cout << "  buf_size: " << request.buf.size() << std::endl;
     int result;
     try {
-        int server_fd = mapper[request.fd];
+        int server_fd = fileMapper[request.fd];
         result = write(server_fd, request.buf.data(), request.buf.size());
     }
     catch (std::out_of_range&) {
@@ -153,7 +153,7 @@ std::vector<u_int8_t> Handler::lseek_handler(std::vector<u_int8_t> byte_request)
 
     off_t result;
     try {
-        int server_fd = mapper[request.fd];
+        int server_fd = fileMapper[request.fd];
         result = lseek(server_fd, request.offset, request.whence);
     }
     catch (std::out_of_range&) {
@@ -179,9 +179,9 @@ std::vector<u_int8_t> Handler::close_handler(std::vector<u_int8_t> byte_request)
 
     int result;
     try {
-        int server_fd = mapper[request.fd];
+        int server_fd = fileMapper[request.fd];
         result = close(server_fd);
-        mapper.removeDescriptor(request.fd);
+        fileMapper.removeDescriptor(request.fd);
     }
     catch (std::out_of_range&) {
         result = -1;
@@ -224,9 +224,15 @@ std::vector<u_int8_t> Handler::opendir_handler(std::vector<u_int8_t> byte_reques
     std::cout << "Request:" << std::endl;
     std::cout << " name: " << request.name << std::endl;
     int result = -1;
-    DIR* dirstream =  opendir(request.name.c_str());
-    if (dirstream != nullptr)
-      result = dirfd(dirstream);
+    try {
+        DIR* dirstream = opendir(request.name.c_str());
+        if ( dirstream != nullptr) {
+            result = dirMapper.addDescriptor(dirstream);
+        }
+    } catch (std::exception&) {
+        result = -1;
+        errno = 1;
+    }
     OpendirResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;
@@ -244,20 +250,22 @@ std::vector<u_int8_t> Handler::readdir_handler(std::vector<u_int8_t> byte_reques
   std::cout << "Request:" << std::endl;
   std::cout << " dirfd: " << request.dirfd << std::endl;
   int isDirentNull = 0;
-  DIR *dirp = fdopendir(request.dirfd);
   dirent result;
-  if (dirp == nullptr)
-    isDirentNull = 1;
-  else
-  {
-      dirent* resultPtr =  readdir(dirp);
-        
-      if (resultPtr == nullptr)
-        isDirentNull = 1;
-      else
-        memcpy((void *)&result,resultPtr,sizeof(result));
+  try {
+      DIR *dirp = dirMapper[request.dirfd];
+      if (dirp == nullptr)
+          isDirentNull = 1;
+      else {
+          dirent *resultPtr = readdir(dirp);
+          if (resultPtr == nullptr)
+              isDirentNull = 1;
+          else
+              memcpy((void *) &result, resultPtr, sizeof(result));
+      }
   }
-
+  catch (std::exception&) {
+    errno = 1;
+  }
   ReaddirResponse response = {isDirentNull, result, errno};
   std::cout << "Response:" << std::endl;
   std::cout << "  result: " << response.result.d_name << std::endl;
@@ -275,10 +283,14 @@ std::vector<u_int8_t> Handler::closedir_handler(std::vector<u_int8_t> byte_reque
     std::cout << "Request:" << std::endl;
     std::cout << " dirfd: " << request.dirfd << std::endl;
     int result = -1;
-    DIR *dirp = fdopendir(request.dirfd);
-    if (dirp != nullptr)
-      result =  closedir(dirp);
-
+    try {
+        DIR *dirp = dirMapper[request.dirfd];
+        if (dirp != nullptr)
+            result =  closedir(dirp);
+    } catch (std::exception&) {
+        result = -1;
+        errno = 1;
+    }
     ClosedirResponse response = {result, errno};
     std::cout << "Response:" << std::endl;
     std::cout << "  result: " << response.result << std::endl;

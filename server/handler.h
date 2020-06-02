@@ -21,7 +21,8 @@ public:
 private:
     int authenticate(std::string username, std::size_t passwordHash);
 
-    DescriptorsMapper mapper;
+    DescriptorsMapper<int> fileMapper;
+    DescriptorsMapper<DIR*> dirMapper;
     const static std::string shadowFilePath;
 };
 
