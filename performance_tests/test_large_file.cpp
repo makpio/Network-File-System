@@ -5,6 +5,8 @@
 #include <string>
 #include <math.h>
 #include <numeric>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <algorithm>
 
 int main(int argc, char* argv[]){
