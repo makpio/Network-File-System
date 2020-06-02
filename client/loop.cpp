@@ -27,7 +27,7 @@ int run_loop(Connector* connector, bool& exit){
                 break;
             }
             case Command::Get:{
-                Mock_saver s;
+                FSSaver s;
                 succ = get_handler(command, &s, connector);
                 break;
             }
