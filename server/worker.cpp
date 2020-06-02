@@ -145,9 +145,10 @@ std::vector<u_int8_t> opendir_handler(std::vector<u_int8_t> byte_request) {
   OpendirRequest request = DeserializeToOpendirRequest(byte_request);
   std::cout << "Request:" << std::endl;
   std::cout << " name: " << request.name << std::endl;
-
+  int result = -1;
   DIR* dirstream =  opendir(request.name.c_str());
-  int result = dirfd(dirstream);
+     if (dirstream != nullptr)
+      result = dirfd(dirstream);
   OpendirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;
   std::cout << "  result: " << response.result << std::endl;
@@ -172,7 +173,7 @@ std::vector<u_int8_t> readdir_handler(std::vector<u_int8_t> byte_request) {
   else
   {
       dirent* resultPtr =  readdir(dirp);
-    
+        
       if (resultPtr == nullptr)
         isDirentNull = 1;
       else
@@ -195,9 +196,10 @@ std::vector<u_int8_t> closedir_handler(std::vector<u_int8_t> byte_request) {
   ClosedirRequest request = DeserializeToClosedirRequest(byte_request);
   std::cout << "Request:" << std::endl;
   std::cout << " dirfd: " << request.dirfd << std::endl;
-
-  DIR *dirp = fdopendir(request.dirfd);
-  int result =  closedir(dirp);
+  int result = -1;
+    DIR *dirp = fdopendir(request.dirfd);
+    if (dirp != nullptr)
+      result =  closedir(dirp);
 
   ClosedirResponse response = {result, errno};
   std::cout << "Response:" << std::endl;

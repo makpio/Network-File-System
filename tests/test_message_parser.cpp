@@ -3,8 +3,6 @@
 #include <cassert>
 
 #include "./utils.hpp"
-
-
 #include "../libraries/core/serializers.hpp"
 
 
