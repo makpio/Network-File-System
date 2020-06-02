@@ -114,9 +114,10 @@ off_t NFSConnector::lseek(int fd, off_t offset, int whence){
 
 bool NFSConnector::ls(std::string path, unsigned int options, std::vector<FileInfo>& dirs){
     auto dd = client->opendir(path.c_str());
+    bool is_null = false;
     do{
-        dirent dirend_ptr = client->readdir(dd);
-        if(error != 0){
+        dirent dirend_ptr = client->readdir(dd, is_null);
+        if(error != 0 || is_null){
             break;
         }
         dirs.push_back(std::string(dirend_ptr.d_name));

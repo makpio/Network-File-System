@@ -22,7 +22,7 @@ public:
   int unlink(const char *pathname);
 
   int opendir(const char *name);
-  dirent readdir(int dirfd);
+  dirent readdir(int dirfd, bool& is_null);
   int closedir(int dirfd);
 
 private:

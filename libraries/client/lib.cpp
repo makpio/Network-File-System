@@ -168,7 +168,7 @@ int NFSClient::opendir(const char *name) {
   return opendir_response.result;
 };
 
-dirent NFSClient::readdir(int dirfd) {
+dirent NFSClient::readdir(int dirfd, bool& is_null) {
   ReaddirRequest readdir_request{dirfd};
   std::vector<u_int8_t> byte_request = SerializeReaddirRequest(readdir_request); 
  
@@ -177,7 +177,8 @@ dirent NFSClient::readdir(int dirfd) {
 
   ReaddirResponse readdir_response = DeserializeToReaddirResponse(byte_response);
   error = readdir_response.error;
-  return readdir_response.result; 
+  is_null = readdir_response.isDirentNull;
+  return readdir_response.result;
 };
 
 int NFSClient::closedir(int dirfd) {
