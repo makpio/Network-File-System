@@ -1,4 +1,7 @@
 #include "../libraries/client/lib.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -25,15 +28,21 @@ int main(int argc, char* argv[]){
     times.reserve(repeats);
 
     char buff[1024];
-
+    const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+    for (int i = 0; i < 1024; ++i) {
+        buff[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
     NFSClient client;
     client.connect4(argv[2], 9000, argv[1], argv[3]);
 
     for(int i = repeats; i >0; --i){
         auto beg = std::chrono::high_resolution_clock::now();
 
-        auto fd = client.open(argv[4], O_RDONLY, 0);
-        client.read(fd, buff, 1024);
+        auto fd = client.open(argv[4],  O_WRONLY, 0);
+        client.write(fd, buff, 1024);
         client.close(fd);
 
         auto end = std::chrono::high_resolution_clock::now();
@@ -50,12 +59,13 @@ int main(int argc, char* argv[]){
     }
 
     std::cout<<
-    std::string("times:")+
-    "\nmean: "+std::to_string(mean)+
-    "\nstddev: "+std::to_string(std::sqrt(var))+
-    "\nmin time: "+std::to_string(*std::min_element(times.begin(), times.end()))+
-    "\nmax time: "+std::to_string(*std::max_element(times.begin(), times.end()))
-    <<std::endl;
+             std::string("times:")+
+             "\nmean: "+std::to_string(mean)+
+             "\nstddev: "+std::to_string(std::sqrt(var))+
+             "\nmin time: "+std::to_string(*std::min_element(times.begin(), times.end()))+
+             "\nmax time: "+std::to_string(*std::max_element(times.begin(), times.end()))
+             <<std::endl;
 
     return 0;
 }
+
