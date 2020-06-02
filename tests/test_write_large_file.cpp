@@ -1,4 +1,7 @@
 #include "../libraries/client/lib.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -19,34 +22,29 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    const int repeats = 1024;
-
-    std::vector<double> times;
-    times.reserve(repeats);
-
-    char buff[1024];
-
+    const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+    char buff[2 * 1024 * 1024];
+    for (int i = 0; i < 2 * 1024 * 1024; ++i) {
+        buff[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
     NFSClient client;
     client.connect4(argv[2], 9000, argv[1], argv[3]);
 
     auto beg = std::chrono::high_resolution_clock::now();
-    auto fd = client.open(argv[4], O_RDONLY, 0);
+    auto fd = client.open(argv[4], O_WRONLY, 0);
 
-    unsigned int num_frames = 0;
 
-    long len=0;
-    do{
-        len = client.read(fd, buff, 1024);
-        ++num_frames;
-    }while(len!=0);
+        client.write(fd, buff , 2 * 1024 * 1024);
+
 
     client.close(fd);
     auto end = std::chrono::high_resolution_clock::now();
-    double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg).count(); 
-        
+    double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg).count();
+
 
     std::cout<<"time: "+std::to_string(time_taken/1e9)<<std::endl;
-    std::cout<<"num_frames: "<<num_frames<<std::endl;
-
     return 0;
 }
