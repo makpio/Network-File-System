@@ -26,5 +26,5 @@ bool get_dir_handler(Command c, Connector* connector){
         for(auto d: dirs){
             std::cout<<d<<'\n';
     }}
-
+    return true;
 }
