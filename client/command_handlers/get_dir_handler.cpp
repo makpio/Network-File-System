@@ -20,10 +20,11 @@ bool get_dir_handler(Command c, Connector* connector){
     auto parsed_options = parse_options(options);
     std::vector<FileInfo> dirs;
     connector->ls(dir, parsed_options, dirs);
-
-    std::cout<<"Your files:\n";
-    for(auto d: dirs){
-        std::cout<<d<<'\n';
-    }
+    
+    if(dirs.size() > 0){
+        std::cout<<"Your files:\n";
+        for(auto d: dirs){
+            std::cout<<d<<'\n';
+    }}
 
 }
